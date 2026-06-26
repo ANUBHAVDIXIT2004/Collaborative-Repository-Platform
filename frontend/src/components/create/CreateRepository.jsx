@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import "./createRepo.css";
 function CreateRepository() {
 
     const navigate = useNavigate();
@@ -52,7 +52,7 @@ function CreateRepository() {
 
     return(
 
-        <div>
+        <div className="createRepo">
 
             <h1>Create Repository</h1>
 
@@ -74,17 +74,21 @@ function CreateRepository() {
 
                 <br/><br/>
 
-                <label>
+                <div className="visibilityBox">
 
-                    Public
+                    <span>Repository Visibility</span>
 
-                    <input
-                    type="checkbox"
-                    checked={visibility}
-                    onChange={()=>setVisibility(!visibility)}
-                    />
+                    <label>
+                        <input
+                            type="checkbox"
+                            checked={visibility}
+                            onChange={() => setVisibility(!visibility)}
+                        />
 
-                </label>
+                        {visibility ? "🌍 Public" : "🔒 Private"}
+                    </label>
+
+                </div>
 
                 <br/><br/>
 
