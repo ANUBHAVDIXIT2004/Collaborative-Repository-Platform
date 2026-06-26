@@ -159,19 +159,55 @@ async function toggleVisibilityById(req, res) {
   }
 }
 
+const File = require("../models/File");
+
 async function deleteRepositoryById(req, res) {
+
   const { id } = req.params;
+  const { userId } = req.body;
+
   try {
-    const repository = await Repository.findByIdAndDelete(id);
+
+    const repository = await Repository.findById(id);
+
     if (!repository) {
-      return res.status(404).json({ error: "Repository not found!" });
+      return res.status(404).json({
+        error: "Repository not found"
+      });
     }
 
-    res.json({ message: "Repository deleted successfully!" });
+    if (repository.owner.toString() !== userId) {
+      return res.status(403).json({
+        error: "You are not allowed to delete this repository."
+      });
+    }
+
+    await File.deleteMany({
+      repo: id,
+    });
+
+    await Repository.findByIdAndDelete(id);
+
+    await User.findByIdAndUpdate(userId, {
+      $pull: {
+        repositories: id,
+      },
+    });
+
+    res.json({
+      message: "Repository deleted successfully!"
+    });
+
   } catch (err) {
-    console.error("Error during deleting repository : ", err.message);
-    res.status(500).send("Server error");
+
+    console.log(err);
+
+    res.status(500).json({
+      error: err.message
+    });
+
   }
+
 }
 
 module.exports = {

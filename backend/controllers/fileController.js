@@ -67,7 +67,69 @@ const getFiles = async (req, res) => {
     }
 };
 
+const getFileById = async (req, res) => {
+    try {
+
+        const file = await File.findById(req.params.fileId);
+
+        if (!file) {
+            return res.status(404).json({
+                message: "File not found"
+            });
+        }
+
+        res.json(file);
+
+    } catch (err) {
+        res.status(500).json({
+            message: err.message
+        });
+    }
+};
+
+const deleteFile = async (req, res) => {
+  try {
+
+    const { fileId } = req.params;
+    const { userId } = req.body;
+
+    const file = await File.findById(fileId);
+
+    if (!file) {
+      return res.status(404).json({
+        message: "File not found"
+      });
+    }
+
+    const repo = await Repository.findById(file.repo);
+
+    if (!repo) {
+      return res.status(404).json({
+        message: "Repository not found"
+      });
+    }
+
+    if (repo.owner.toString() !== userId) {
+      return res.status(403).json({
+        message: "You are not allowed to delete this file"
+      });
+    }
+
+    await File.findByIdAndDelete(fileId);
+
+    res.json({
+      message: "File deleted successfully"
+    });
+
+  } catch (err) {
+    res.status(500).json({
+      message: err.message
+    });
+  }
+};
 module.exports = {
     createFile,
-    getFiles
+    getFiles,
+    getFileById,
+    deleteFile
 };

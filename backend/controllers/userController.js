@@ -191,7 +191,91 @@ async function deleteUserProfile(req, res) {
     res.status(500).send("Server error!");
   }
 }
+const User = require("../models/userModel");
+const Repository = require("../models/repoModel");
 
+async function toggleStarRepo(req, res) {
+  const { userId, repoId } = req.body;
+
+  try {
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found"
+      });
+    }
+
+    const repo = await Repository.findById(repoId);
+
+    if (!repo) {
+      return res.status(404).json({
+        message: "Repository not found"
+      });
+    }
+
+    const alreadyStarred = user.starRepos.some(
+      (id) => id.toString() === repoId
+    );
+
+    if (alreadyStarred) {
+
+      user.starRepos = user.starRepos.filter(
+        (id) => id.toString() !== repoId
+      );
+
+      await user.save();
+
+      // Decrease star count
+      repo.stars = Math.max(0, (repo.stars || 0) - 1);
+      await repo.save();
+
+      return res.json({
+        starred: false,
+        stars: repo.stars,
+      });
+    }
+
+    // Add star
+    user.starRepos.push(repoId);
+    await user.save();
+
+    // Increase star count
+    repo.stars = (repo.stars || 0) + 1;
+    await repo.save();
+
+    return res.json({
+      starred: true,
+      stars: repo.stars,
+    });
+
+  } catch (err) {
+    res.status(500).json({
+      message: err.message,
+    });
+  }
+}
+
+async function getStarredRepositories(req, res) {
+  try {
+    const user = await User.findById(req.params.userId)
+      .populate("starRepos");
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found"
+      });
+    }
+
+    res.json(user.starRepos);
+
+  } catch (err) {
+    res.status(500).json({
+      message: err.message
+    });
+  }
+}
 module.exports = {
   getAllUsers,
   signup,
@@ -199,4 +283,6 @@ module.exports = {
   getUserProfile,
   updateUserProfile,
   deleteUserProfile,
+  toggleStarRepo,
+  getStarredRepositories
 };
