@@ -59,12 +59,20 @@ async function getAllRepositories(req, res) {
 
 async function fetchRepositoryById(req, res) {
   const { id } = req.params;
+
   try {
-    const repository = await Repository.find({ _id: id })
+    const repository = await Repository.findById(id)
       .populate("owner")
       .populate("issues");
 
+    if (!repository) {
+      return res.status(404).json({
+        error: "Repository not found!"
+      });
+    }
+
     res.json(repository);
+
   } catch (err) {
     console.error("Error during fetching repository : ", err.message);
     res.status(500).send("Server error");
