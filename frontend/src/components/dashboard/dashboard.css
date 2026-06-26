@@ -1,0 +1,147 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    background:#0d1117;
+    color:#f0f6fc;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+.dashboard{
+    display:flex;
+    gap:30px;
+    padding:35px 60px;
+    background:#0d1117;
+    min-height:calc(100vh - 70px);
+}
+
+.left{
+    flex:2;
+}
+
+.right{
+    flex:1;
+}
+
+.sectionTitle{
+    font-size:28px;
+    margin-bottom:25px;
+    color:white;
+}
+
+.emptyText{
+    color:#8b949e;
+    margin-top:30px;
+}
+
+/* Repository Card */
+
+.repoCard{
+    background:#161b22;
+    border:1px solid #30363d;
+    border-radius:12px;
+    padding:22px;
+    margin-bottom:20px;
+    transition:.25s;
+    cursor:pointer;
+}
+
+.repoCard:hover{
+    border-color:#58a6ff;
+    transform:translateY(-3px);
+    box-shadow:0 8px 20px rgba(0,0,0,.25);
+}
+
+.repoHeader{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:18px;
+}
+
+.repoHeader h3{
+    color:#58a6ff;
+    font-size:22px;
+}
+
+.repoDescription{
+    color:#8b949e;
+    line-height:24px;
+    margin-bottom:20px;
+}
+
+/* Public / Private Badge */
+
+.visibility{
+    padding:6px 14px;
+    border-radius:20px;
+    font-size:13px;
+    font-weight:600;
+}
+
+.public{
+    background:#238636;
+    color:white;
+}
+
+.private{
+    background:#da3633;
+    color:white;
+}
+
+.repoFooter{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    color:#8b949e;
+    font-size:14px;
+    border-top:1px solid #30363d;
+    padding-top:15px;
+}
+
+/* Suggested Repository */
+
+.suggestCard{
+    background:#161b22;
+    border:1px solid #30363d;
+    border-radius:12px;
+    padding:18px;
+    margin-bottom:18px;
+    transition:.25s;
+    cursor:pointer;
+}
+
+.suggestCard:hover{
+    border-color:#58a6ff;
+    transform:translateY(-3px);
+}
+
+.suggestCard h3{
+    color:#58a6ff;
+    margin-bottom:10px;
+    font-size:18px;
+}
+
+.suggestCard p{
+    color:#8b949e;
+    line-height:22px;
+}
+
+/* Responsive */
+
+@media(max-width:900px){
+
+    .dashboard{
+        flex-direction:column;
+        padding:25px;
+    }
+
+    .left,
+    .right{
+        width:100%;
+    }
+
+}
