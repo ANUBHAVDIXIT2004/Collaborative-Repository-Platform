@@ -82,22 +82,21 @@ const Profile = () => {
         </UnderlineNav.Item>
       </UnderlineNav>
 
-      <button
-        id="logout"
-        style={{
-          position: "fixed",
-          bottom: "40px",
-          right: "40px",
-        }}
-        onClick={() => {
-          localStorage.removeItem("token");
-          localStorage.removeItem("userId");
-          setCurrentUser(null);
-          window.location.href = "/auth";
-        }}
-      >
-        Logout
-      </button>
+      <div className="profileActions">
+
+          <button
+              className="logoutBtn"
+              onClick={() => {
+                  localStorage.removeItem("token");
+                  localStorage.removeItem("userId");
+                  setCurrentUser(null);
+                  window.location.href="/auth";
+              }}
+          >
+              Logout
+          </button>
+
+      </div>
 
       {activeTab === "overview" && (
         <div className="profile-page-wrapper">

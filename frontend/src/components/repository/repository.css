@@ -1,0 +1,341 @@
+/* ===========================
+   Github-like Theme
+=========================== */
+
+body{
+    margin:0;
+    background:#0d1117;
+    color:#e6edf3;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+}
+
+.repoContainer{
+    max-width:1100px;
+    margin:30px auto;
+    padding:20px;
+}
+
+/* Header */
+
+.repoHeader{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:20px;
+    margin-bottom:25px;
+}
+
+.repoTitle{
+    font-size:34px;
+    margin:0;
+    font-weight:700;
+}
+
+.repoDescription{
+    color:#8b949e;
+    margin-top:8px;
+    margin-bottom:15px;
+}
+
+.repoMeta{
+    display:flex;
+    gap:15px;
+    color:#8b949e;
+    font-size:14px;
+}
+
+.repoButtons{
+    display:flex;
+    gap:10px;
+}
+
+.starButton,
+.greenButton,
+.deleteButton{
+    border:none;
+    padding:10px 18px;
+    border-radius:6px;
+    cursor:pointer;
+    font-weight:600;
+    transition:.25s;
+}
+
+.starButton{
+    background:#21262d;
+    color:white;
+}
+
+.starButton:hover{
+    background:#30363d;
+}
+
+.greenButton{
+    margin-left:auto;
+    background:#238636;
+    color:white;
+    border:none;
+    padding:8px 16px;
+    border-radius:6px;
+    cursor:pointer;
+    font-weight:600;
+}
+
+.greenButton:hover{
+    background:#2ea043;
+}
+
+.deleteButton{
+    background:#da3633;
+    color:white;
+}
+
+.deleteButton:hover{
+    background:#f85149;
+}
+
+/* Files Header */
+
+.filesHeader{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    width:100%;
+    padding:16px 20px;
+    box-sizing:border-box;
+}
+
+/* File List */
+
+.filesCard{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:16px 20px;
+    background:#161b22;
+    border:1px solid #30363d;
+    border-radius:8px;
+    margin-bottom:12px;
+    transition:.2s;
+}
+
+.filesCard:hover{
+    background:#1f2937;
+}
+
+.fileName{
+    cursor:pointer;
+    color:#58a6ff;
+    font-weight:600;
+}
+
+.fileName:hover{
+    text-decoration:underline;
+}
+.fileRow{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:16px 20px;
+    border-bottom:1px solid #30363d;
+}
+
+.fileRow:last-child{
+    border-bottom:none;
+}
+
+.fileRow:hover{
+    background:#1f2937;
+}
+.deleteFileButton{
+    background:#da3633;
+    color:white;
+    border:none;
+    padding:8px 14px;
+    border-radius:6px;
+    cursor:pointer;
+}
+
+.deleteFileButton:hover{
+    background:#f85149;
+}
+/* ===========================
+   Add File Card
+=========================== */
+
+.addFileCard{
+    margin-top:20px;
+    margin-bottom:25px;
+    background:#161b22;
+    border:1px solid #30363d;
+    border-radius:8px;
+    padding:20px;
+}
+
+.addFileCard input,
+.addFileCard textarea{
+    width:100%;
+    box-sizing:border-box;
+    margin-bottom:15px;
+    padding:12px;
+    border:1px solid #30363d;
+    border-radius:6px;
+    background:#0d1117;
+    color:#e6edf3;
+    outline:none;
+    font-size:15px;
+}
+
+.addFileCard input:focus,
+.addFileCard textarea:focus{
+    border-color:#1f6feb;
+    box-shadow:0 0 0 3px rgba(31,111,235,0.2);
+}
+
+.addFileCard textarea{
+    resize:vertical;
+    min-height:220px;
+    font-family:Consolas, monospace;
+}
+
+.addFileCard button{
+    background:#238636;
+    color:white;
+    border:none;
+    padding:10px 18px;
+    border-radius:6px;
+    cursor:pointer;
+    font-weight:600;
+    transition:.2s;
+}
+
+.addFileCard button:hover{
+    background:#2ea043;
+}
+
+/* ===========================
+   Commit History
+=========================== */
+
+.commitCard{
+    margin-top:30px;
+    background:#161b22;
+    border:1px solid #30363d;
+    border-radius:8px;
+    overflow:hidden;
+}
+
+.commitCard h2{
+    margin:0;
+    padding:18px 20px;
+    border-bottom:1px solid #30363d;
+    font-size:20px;
+}
+
+.commitRow{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:18px 20px;
+    border-bottom:1px solid #30363d;
+}
+
+.commitRow:last-child{
+    border-bottom:none;
+}
+
+.commitMessage{
+    font-size:16px;
+    font-weight:600;
+    color:#e6edf3;
+    margin-bottom:5px;
+}
+
+.commitInfo{
+    color:#8b949e;
+    font-size:14px;
+    margin-bottom:4px;
+}
+
+.commitAuthor{
+    color:#6e7681;
+    font-size:13px;
+}
+
+.commitRow small{
+    color:#8b949e;
+    white-space:nowrap;
+}
+/* Form */
+
+.formCard{
+    background:#161b22;
+    border:1px solid #30363d;
+    border-radius:8px;
+    padding:20px;
+    margin-bottom:25px;
+}
+
+.formCard input,
+.formCard textarea{
+    width:100%;
+    box-sizing:border-box;
+    margin-bottom:15px;
+    background:#0d1117;
+    border:1px solid #30363d;
+    color:white;
+    padding:12px;
+    border-radius:6px;
+    outline:none;
+}
+
+.formCard input:focus,
+.formCard textarea:focus{
+    border-color:#58a6ff;
+}
+
+.formCard button{
+    background:#238636;
+    color:white;
+    border:none;
+    padding:12px 20px;
+    border-radius:6px;
+    cursor:pointer;
+}
+
+.formCard button:hover{
+    background:#2ea043;
+}
+
+/* Divider */
+
+hr{
+    border:0;
+    border-top:1px solid #30363d;
+    margin:25px 0;
+}
+
+/* Mobile */
+
+@media(max-width:800px){
+
+.repoHeader{
+    flex-direction:column;
+}
+
+.filesHeader{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:15px;
+}
+
+.repoButtons{
+    width:100%;
+}
+
+.starButton,
+.greenButton,
+.deleteButton{
+    flex:1;
+}
+
+}
