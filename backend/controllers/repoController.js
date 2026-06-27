@@ -254,6 +254,125 @@ async function deleteRepositoryById(req, res) {
 
 }
 
+async function copyRepository(req, res) {
+
+  const { repoId } = req.params;
+  const { userId } = req.body;
+
+  try {
+
+    // Find original repository
+    const repository = await Repository.findById(repoId);
+
+    if (!repository) {
+      return res.status(404).json({
+        error: "Repository not found!"
+      });
+    }
+
+    // Prevent owner from copying their own repo
+    if (repository.owner.toString() === userId) {
+      return res.status(400).json({
+        error: "You already own this repository."
+      });
+    }
+
+    // Generate unique repository name
+    let newName = `${repository.name}-copy`;
+
+    let count = 1;
+
+    while (await Repository.findOne({ name: newName })) {
+
+      newName = `${repository.name}-copy-${count}`;
+
+      count++;
+
+    }
+
+    // Create new repository
+    const newRepository = await Repository.create({
+
+      name: newName,
+
+      description: repository.description,
+
+      visibility: repository.visibility,
+
+      owner: userId,
+
+      issues: [],
+
+      stars: 0,
+
+      headCommit: null,
+
+      content: []
+
+    });
+
+    // Add repository to user
+    await User.findByIdAndUpdate(userId, {
+
+      $push: {
+
+        repositories: newRepository._id
+
+      }
+
+    });
+
+    // Copy all files
+    const files = await File.find({
+
+      repo: repository._id
+
+    });
+
+    for (const file of files) {
+
+      const newFile = await File.create({
+
+        repo: newRepository._id,
+
+        name: file.name,
+
+        content: file.content,
+
+        createdBy: userId
+
+      });
+
+      // Store file id inside repository.content
+      newRepository.content.push(newFile._id);
+
+    }
+
+    await newRepository.save();
+
+    res.status(201).json({
+
+      success: true,
+
+      repository: newRepository
+
+    });
+
+  }
+
+  catch (err) {
+
+    console.log(err);
+
+    res.status(500).json({
+
+      error: err.message
+
+    });
+
+  }
+
+}
 module.exports = {
   createRepository,
   getAllRepositories,
@@ -263,4 +382,5 @@ module.exports = {
   updateRepositoryById,
   toggleVisibilityById,
   deleteRepositoryById,
+  copyRepository,
 };

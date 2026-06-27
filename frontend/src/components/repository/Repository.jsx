@@ -210,7 +210,55 @@ const Repository = () => {
     }
 
   };
+  const copyRepository = async () => {
 
+    try {
+
+      const response = await fetch(
+
+        `http://localhost:3002/repo/copy/${repoId}`,
+
+        {
+
+          method: "POST",
+
+          headers: {
+
+            "Content-Type": "application/json"
+
+          },
+
+          body: JSON.stringify({
+
+            userId: currentUser
+
+          })
+
+        }
+
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+
+        alert(data.message);
+
+        return;
+
+      }
+
+      alert("Repository copied successfully!");
+
+      navigate(`/repo/${data.repository._id}`);
+
+    } catch (err) {
+
+      console.log(err);
+
+    }
+
+  };
   const deleteFile = async (fileId) => {
 
     const commitMessage = prompt("Enter commit message");
@@ -325,13 +373,25 @@ const Repository = () => {
           </button>
 
           {
-            isOwner &&
-            <button
-              className="deleteButton"
-              onClick={deleteRepository}
-            >
-              Delete
-            </button>
+            isOwner ? (
+
+              <button
+                className="deleteButton"
+                onClick={deleteRepository}
+              >
+                Delete
+              </button>
+
+            ) : (
+
+              <button
+                className="copyButton"
+                onClick={copyRepository}
+              >
+                📋 Fork Repository
+              </button>
+
+            )
           }
 
         </div>
@@ -485,30 +545,30 @@ const Repository = () => {
                 </div>
 
                 <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "flex-end",
-                      gap: "10px"
-                    }}
-                  >
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "flex-end",
+                    gap: "10px"
+                  }}
+                >
 
-                    <small>
-                      {new Date(commit.createdAt).toLocaleString()}
-                    </small>
+                  <small>
+                    {new Date(commit.createdAt).toLocaleString()}
+                  </small>
 
-                    {
-                      isOwner && (
-                        <button
-                          className="resetButton"
-                          onClick={() => resetCommit(commit._id)}
-                        >
-                          Reset Here
-                        </button>
-                      )
-                    }
+                  {
+                    isOwner && (
+                      <button
+                        className="resetButton"
+                        onClick={() => resetCommit(commit._id)}
+                      >
+                        Reset Here
+                      </button>
+                    )
+                  }
 
-                  </div>
+                </div>
 
               </div>
 

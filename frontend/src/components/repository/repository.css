@@ -209,6 +209,29 @@ body{
     background:#2ea043;
 
 }
+.copyButton{
+
+    background:#238636;
+
+    color:white;
+
+    border:none;
+
+    padding:10px 18px;
+
+    border-radius:8px;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+}
+
+.copyButton:hover{
+
+    background:#2ea043;
+
+}
 /* ===========================
    Add File Card
 =========================== */
