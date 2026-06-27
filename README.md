@@ -1,25 +1,41 @@
-# VERSION CONTROL SYSTEM 🚀
+# BitHub — Collaborative Repository Platform
 
-A full-stack GitHub-inspired platform built with **React**, **Node.js/Express**, **MongoDB**, and **AWS S3**. It supports repository management, file versioning, issue tracking, real-time features via Socket.io, and AI-powered tools powered by **Google Gemini**.
+A full-stack code hosting platform with a custom-built version control engine, AI-powered developer tools, and AWS S3 remote sync — inspired by GitHub, built from scratch.
+
+> Built with React, Node.js/Express, MongoDB, AWS S3, Google Gemini, and Socket.io.
+
+---
+
+## What This Project Does
+
+Most developers build CRUD apps. This project goes a layer deeper — implementing the core primitives of a version control system (staging, commits, snapshots, revert, remote push/pull) alongside a full web platform for hosting and collaborating on code.
+
+The version control engine (`BitHub`) works as both a **CLI tool** and a **web-backed API**, storing full file snapshots per commit with a linked parent chain — similar in concept to how Git stores trees, just without branching or diffing (yet).
 
 ---
 
 ## ✨ Features
 
-- **User Authentication** — Signup, login with JWT-based sessions and bcrypt password hashing
-- **Repository Management** — Create, view, update, delete, fork (copy), and toggle visibility of repositories
-- **File Management** — Upload, view, and edit files inside repositories
-- **Version Control (ApnaGit)** — Local CLI-style version control with `init`, `add`, `commit`, `push`, `pull`, and `revert` commands backed by AWS S3
-- **Commit History** — Full commit timeline per repository with snapshot-based rollback
-- **Issue Tracker** — Create and manage issues (open/closed) per repository
-- **Star System** — Star/unstar repositories with live star counts
-- **User Profiles** — View and update profiles, see starred repositories and contribution heatmap
-- **AI Features (Gemini-powered)**
-  - Auto-generate commit messages based on file diffs
-  - AI code review for any file
-  - Auto-generate a `README.md` for any repository
-- **Real-time** — Socket.io integration for live user room connections
-- **Dashboard** — Browse all public repositories with last-commit timestamps
+**Platform**
+- JWT-based auth with bcrypt password hashing
+- Create, fork, delete, and toggle visibility of repositories
+- Star/unstar repositories with live star counts
+- User profiles with contribution heatmap
+- Issue tracker (open/close) per repository
+- Dashboard with all public repositories and last-commit timestamps
+- Real-time user rooms via Socket.io
+
+**Version Control Engine (BitHub)**
+- CLI commands: `init`, `add`, `commit`, `push`, `pull`, `revert`
+- Snapshot-based commit history (full file state per commit)
+- Linked commit chain with `parentCommit` pointer
+- Single HEAD pointer per repository
+- AWS S3 as the remote store for push/pull
+
+**AI Tools (Google Gemini)**
+- Auto-generate commit messages from file changes
+- AI code review for any file in a repository
+- Auto-generate a `README.md` for any repository based on its files
 
 ---
 
@@ -31,10 +47,9 @@ A full-stack GitHub-inspired platform built with **React**, **Node.js/Express**,
 | Backend | Node.js, Express 5, Yargs (CLI) |
 | Database | MongoDB (Mongoose ODM) |
 | Auth | JWT, bcryptjs |
-| Storage | AWS S3 (push/pull commits) |
+| Storage | AWS S3 |
 | AI | Google Gemini (`@google/generative-ai`) |
 | Real-time | Socket.io |
-| Dev Tools | Nodemon, Oxlint |
 
 ---
 
@@ -44,32 +59,30 @@ A full-stack GitHub-inspired platform built with **React**, **Node.js/Express**,
 git-hubP/
 ├── backend/
 │   ├── config/
-│   │   └── aws-config.js         # AWS S3 configuration
+│   │   └── aws-config.js         # AWS S3 setup
 │   ├── controllers/
-│   │   ├── userController.js     # Auth, profile, stars
+│   │   ├── userController.js     # Auth, profiles, stars
 │   │   ├── repoController.js     # Repository CRUD + fork
 │   │   ├── commitController.js   # Commit creation & history
 │   │   ├── fileController.js     # File CRUD
 │   │   ├── issueController.js    # Issue management
 │   │   ├── aiController.js       # Gemini AI features
-│   │   ├── init.js               # CLI: init repo
-│   │   ├── add.js                # CLI: stage files
+│   │   ├── init.js               # CLI: init
+│   │   ├── add.js                # CLI: stage
 │   │   ├── commit.js             # CLI: commit
 │   │   ├── push.js               # CLI: push to S3
 │   │   ├── pull.js               # CLI: pull from S3
-│   │   └── revert.js             # CLI: revert commit
+│   │   └── revert.js             # CLI: revert
 │   ├── middleware/
-│   │   ├── authMiddleware.js     # JWT verification
+│   │   ├── authMiddleware.js
 │   │   └── authorizeMiddleware.js
 │   ├── models/
 │   │   ├── userModel.js
 │   │   ├── repoModel.js
 │   │   ├── commitModel.js
 │   │   ├── issueModel.js
-│   │   ├── versionModel.js
 │   │   └── File.js
 │   ├── routes/
-│   │   ├── main.router.js
 │   │   ├── user.router.js
 │   │   ├── repo.router.js
 │   │   ├── commit.router.js
@@ -77,29 +90,25 @@ git-hubP/
 │   │   ├── issue.router.js
 │   │   └── ai.router.js
 │   ├── services/
-│   │   ├── VersionControl.js     # Snapshot-based commit engine
+│   │   ├── VersionControl.js     # Core commit engine
 │   │   └── gemini.service.js     # Gemini API wrapper
 │   ├── utils/
-│   │   ├── createSnapshot.js     # File snapshot utility
+│   │   ├── createSnapshot.js
 │   │   └── prompts.js            # AI prompt templates
-│   └── index.js                  # Entry point (server + CLI)
+│   └── index.js                  # Server + CLI entry point
 │
 └── frontend/
-    ├── src/
-    │   ├── components/
-    │   │   ├── auth/             # Login, Signup
-    │   │   ├── dashboard/        # Repository feed
-    │   │   ├── repository/       # Repo view, files, commits
-    │   │   ├── file/             # File viewer/editor
-    │   │   ├── create/           # Create repository form
-    │   │   ├── user/             # Profile, HeatMap
-    │   │   └── Navbar.jsx
-    │   ├── api/
-    │   │   └── ai.js             # AI API calls
-    │   ├── authContext.jsx       # Auth state management
-    │   ├── Routes.jsx            # App routing
-    │   └── main.jsx
-    └── vite.config.js
+    └── src/
+        ├── components/
+        │   ├── auth/             # Login, Signup
+        │   ├── dashboard/        # Repository feed
+        │   ├── repository/       # Repo view, files, commits
+        │   ├── file/             # File viewer/editor
+        │   ├── create/           # Create repository
+        │   └── user/             # Profile, HeatMap
+        ├── api/ai.js
+        ├── authContext.jsx
+        └── Routes.jsx
 ```
 
 ---
@@ -127,7 +136,7 @@ cd backend
 npm install
 ```
 
-Create a `.env` file in the `backend/` directory:
+Create a `.env` file in `backend/`:
 
 ```env
 MONGODB_URI=your_mongodb_connection_string
@@ -136,19 +145,12 @@ JWT_SECRET_KEY=your_jwt_secret
 GEMINI_API_KEY=your_gemini_api_key
 ```
 
-Update `config/aws-config.js` with your S3 bucket name:
-
-```js
-const S3_BUCKET = "your-s3-bucket-name";
-```
-
-Start the server:
+Update `config/aws-config.js` with your S3 bucket name, then start the server:
 
 ```bash
 npm start
+# Server runs on http://localhost:3002
 ```
-
-The server runs on `http://localhost:3002`.
 
 ### 3. Frontend Setup
 
@@ -156,34 +158,22 @@ The server runs on `http://localhost:3002`.
 cd ../frontend
 npm install
 npm run dev
+# Frontend runs on http://localhost:5173
 ```
-
-The frontend runs on `http://localhost:5173`.
 
 ---
 
-## 🖥 CLI Usage (ApnaGit)
+## 🖥 CLI Usage (BitHub)
 
-The backend also supports a Git-like CLI for local version control synced to AWS S3.
+The backend doubles as a CLI for local version control synced to S3:
 
 ```bash
-# Initialize a new local repository
-node index.js init
-
-# Stage a file
-node index.js add <filename>
-
-# Commit staged files
-node index.js commit "your commit message"
-
-# Push commits to AWS S3
-node index.js push
-
-# Pull commits from AWS S3
-node index.js pull
-
-# Revert to a specific commit
-node index.js revert <commitID>
+node index.js init                        # Initialize a repository
+node index.js add <filename>              # Stage a file
+node index.js commit "your message"       # Commit staged files
+node index.js push                        # Push commits to S3
+node index.js pull                        # Pull commits from S3
+node index.js revert <commitID>           # Revert to a past commit
 ```
 
 ---
@@ -191,69 +181,61 @@ node index.js revert <commitID>
 ## 🔌 API Reference
 
 ### Auth & Users
-
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/signup` | Register a new user |
-| POST | `/login` | Login and receive JWT |
-| GET | `/userProfile/:id` | Get user profile |
+| POST | `/signup` | Register |
+| POST | `/login` | Login, receive JWT |
+| GET | `/userProfile/:id` | Get profile |
 | PUT | `/updateProfile/:id` | Update profile |
 | DELETE | `/deleteProfile/:id` | Delete account |
-| POST | `/star` | Star/unstar a repository |
-| GET | `/starred/:userId` | Get starred repositories |
+| POST | `/star` | Star / unstar a repo |
+| GET | `/starred/:userId` | Get starred repos |
 
 ### Repositories
-
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/repo/create` | Create a repository |
-| GET | `/repo/all` | Get all repositories |
-| GET | `/repo/:id` | Get repository by ID |
-| GET | `/repo/name/:name` | Get repository by name |
-| GET | `/repo/user/:userID` | Get user's repositories |
-| PUT | `/repo/update/:id` | Update repository |
+| POST | `/repo/create` | Create repository |
+| GET | `/repo/all` | All repositories |
+| GET | `/repo/:id` | Get by ID |
+| GET | `/repo/user/:userID` | User's repositories |
 | DELETE | `/repo/delete/:id` | Delete repository |
 | PATCH | `/repo/toggle/:id` | Toggle public/private |
-| POST | `/repo/copy/:repoId` | Fork a repository |
+| POST | `/repo/copy/:repoId` | Fork repository |
 
 ### Files
-
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/file/:repoId` | List files in repository |
-| POST | `/file/` | Upload a file |
-| PUT | `/file/:fileId` | Update file content |
-| DELETE | `/file/:fileId` | Delete a file |
+| GET | `/file/:repoId` | List files |
+| POST | `/file/` | Upload file |
+| PUT | `/file/:fileId` | Update file |
+| DELETE | `/file/:fileId` | Delete file |
 
 ### Commits
-
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/commit/create` | Create a commit |
-| GET | `/commit/:repoId` | Get commit history |
-| POST | `/commit/revert` | Revert to a commit |
+| POST | `/commit/create` | Create commit |
+| GET | `/commit/:repoId` | Commit history |
+| POST | `/commit/revert` | Revert to commit |
 
 ### Issues
-
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/issue/create` | Open an issue |
+| POST | `/issue/create` | Open issue |
 | GET | `/issue/:repoId` | List issues |
-| PATCH | `/issue/close/:id` | Close an issue |
+| PATCH | `/issue/close/:id` | Close issue |
 
-### AI (Gemini)
-
+### AI
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/ai/commit-message` | Generate a commit message |
-| POST | `/ai/review` | AI code review |
-| POST | `/ai/readme` | Generate README for a repo |
+| POST | `/ai/commit-message` | Generate commit message |
+| POST | `/ai/review` | Code review |
+| POST | `/ai/readme` | Generate README |
 
 ---
 
 ## 🗄 Data Models
 
-**User** — `username`, `email`, `password`, `repositories[]`, `followedUsers[]`, `starRepos[]`
+**User** — `username`, `email`, `password (hashed)`, `repositories[]`, `followedUsers[]`, `starRepos[]`
 
 **Repository** — `name`, `description`, `visibility`, `owner`, `issues[]`, `stars`, `headCommit`
 
@@ -271,12 +253,25 @@ node index.js revert <commitID>
 |----------|-------------|
 | `MONGODB_URI` | MongoDB connection string |
 | `PORT` | Server port (default: 3002) |
-| `JWT_SECRET_KEY` | Secret for signing JWTs |
+| `JWT_SECRET_KEY` | JWT signing secret |
 | `GEMINI_API_KEY` | Google Gemini API key |
 
-AWS credentials should be configured via the AWS CLI or environment variables (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`).
+AWS credentials should be set via AWS CLI or `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` environment variables.
 
-> ⚠️ **Security Note:** Never commit your `.env` file. Rotate all credentials before pushing to a public repository.
+> ⚠️ Never commit your `.env` file. Add it to `.gitignore` and rotate any exposed credentials before pushing publicly.
+
+---
+
+## 🔭 What's Not Implemented (Yet)
+
+This project intentionally focuses on core platform and version control primitives. The following are known limitations and planned improvements:
+
+- **Branching** — Currently single linear history per repo (one HEAD pointer)
+- **Diff generation** — Commits store full snapshots; delta computation is not yet implemented
+- **Merge / conflict resolution** — No multi-branch merging
+- **Distributed sync protocol** — S3 push/pull is a backup mechanism, not a true distributed VCS protocol
+
+These are the natural next steps for anyone looking to contribute or extend the project.
 
 ---
 
@@ -286,3 +281,6 @@ AWS credentials should be configured via the AWS CLI or environment variables (`
 
 ---
 
+## 📄 License
+
+ISC License
