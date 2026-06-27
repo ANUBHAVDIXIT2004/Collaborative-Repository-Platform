@@ -14,6 +14,7 @@ const Repository = () => {
   const [name, setName] = useState("");
   const [content, setContent] = useState("");
   const [commitMessage, setCommitMessage] = useState("");
+  const [aiLoading, setAiLoading] = useState(false);
   const [starred, setStarred] = useState(false);
   const [starLoading, setStarLoading] = useState(false);
   const [commits, setCommits] = useState([]);
@@ -85,7 +86,54 @@ const Repository = () => {
       console.log(err);
     }
   };
+  const generateAICommitMessage = async () => {
 
+    try {
+
+      setAiLoading(true);
+
+      const response = await fetch(
+        "http://localhost:3002/ai/commit-message",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+
+            action: "Create File",
+
+            fileName: name,
+
+            oldContent: "",
+
+            newContent: content
+
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.message);
+        return;
+      }
+
+      setCommitMessage(data.commitMessage);
+
+    } catch (err) {
+
+      console.log(err);
+
+    } finally {
+
+      setAiLoading(false);
+
+    }
+
+  };
+  
   const createFile = async () => {
 
     if (!name.trim()) {
@@ -275,8 +323,15 @@ const Repository = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            userId: currentUser,
-            commitMessage,
+
+            action: "Delete File",
+
+            fileName: file.name,
+
+            oldContent: file.content,
+
+            newContent: ""
+
           }),
         }
       );
@@ -456,7 +511,21 @@ const Repository = () => {
                 marginBottom: "15px"
               }}
             />
-
+            <button
+              onClick={generateAICommitMessage}
+              disabled={aiLoading}
+              style={{
+                marginBottom: "15px",
+                background: "#6f42c1",
+                color: "white",
+                padding: "10px 16px",
+                border: "none",
+                borderRadius: "6px",
+                cursor: "pointer"
+              }}
+            >
+              {aiLoading ? "Generating..." : "🤖 Generate Commit Message"}
+            </button>
             <button onClick={createFile}>
               Create File
             </button>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-
+import { reviewCode } from "../../api/ai";
 const File = () => {
   const { fileId } = useParams();
 
@@ -10,7 +10,9 @@ const File = () => {
   const [content, setContent] = useState("");
 
   const [commitMessage, setCommitMessage] = useState("");
-
+  const [showReview, setShowReview] = useState(false);
+  const [loading, setLoading] = useState(false);
+const [review, setReview] = useState("");
   const currentUser = localStorage.getItem("userId");
   useEffect(() => {
     loadFile();
@@ -26,7 +28,42 @@ const File = () => {
       console.log(err);
     }
   };
+  const handleAIReview = async () => {
 
+    try {
+
+      setLoading(true);
+
+      const extension = file?.name?.split(".").pop() || "txt";
+
+const res = await reviewCode(
+    content,
+    extension
+);
+
+      setReview(
+
+        res.review
+
+      );
+
+      setShowReview(true);
+
+    }
+
+    catch (err) {
+
+      console.log(err);
+
+    }
+
+    finally {
+
+      setLoading(false);
+
+    }
+
+  }
   const saveChanges = async () => {
 
     if (!commitMessage.trim()) {
@@ -153,6 +190,44 @@ const File = () => {
           >
             Save Changes
           </button>
+          {/* <button
+
+            onClick={handleAIReview}
+
+            disabled={loading}
+
+          >
+
+            {
+
+              loading
+
+                ?
+
+                "Reviewing..."
+
+                :
+
+                "🤖 Review with AI"
+
+            }
+
+          </button> */}
+          {/* {showReview && (
+  <div
+    style={{
+      marginTop: "20px",
+      padding: "15px",
+      border: "1px solid #ccc",
+      borderRadius: "8px",
+      background: "#f5f5f5",
+      whiteSpace: "pre-wrap",
+    }}
+  >
+    <h3>🤖 AI Review</h3>
+    <p>{review}</p>
+  </div>
+)} */}
         </>
       ) : (
         <pre
