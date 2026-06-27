@@ -1,4 +1,4 @@
-# GitHub Clone 🚀
+# Version Control System 🚀
 
 A full-stack GitHub-inspired version control platform built using **React, Node.js, Express, MongoDB, and Socket.IO**. The application allows users to create repositories, manage files, track commits, raise issues, and leverage **Google Gemini AI** for commit message generation, code review, and automatic README generation.
 
