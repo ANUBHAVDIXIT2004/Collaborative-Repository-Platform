@@ -34,7 +34,6 @@ The version control engine (`BitHub`) works as both a **CLI tool** and a **web-b
 
 **AI Tools (Google Gemini)**
 - Auto-generate commit messages from file changes
-- AI code review for any file in a repository
 - Auto-generate a `README.md` for any repository based on its files
 - **RepoChat** — AI assistant that answers questions about any repository's codebase using Google Gemini. Ask "how does auth work?" and get answers grounded in the actual files.
 
