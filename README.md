@@ -1,243 +1,291 @@
-# Version Control System 🚀
+# VERSION CONTROL SYSTEM 🚀
 
-A full-stack GitHub-inspired version control platform built using **React, Node.js, Express, MongoDB, and Socket.IO**. The application allows users to create repositories, manage files, track commits, raise issues, and leverage **Google Gemini AI** for commit message generation, code review, and automatic README generation.
+A full-stack GitHub-inspired platform built with **React**, **Node.js/Express**, **MongoDB**, and **AWS S3**. It supports repository management, file versioning, issue tracking, real-time features via Socket.io, and AI-powered tools powered by **Google Gemini**.
 
 ---
 
 ## ✨ Features
 
-### 👤 Authentication
-- User Signup
-- User Login
-- JWT Authentication
-- Protected Routes
+- **User Authentication** — Signup, login with JWT-based sessions and bcrypt password hashing
+- **Repository Management** — Create, view, update, delete, fork (copy), and toggle visibility of repositories
+- **File Management** — Upload, view, and edit files inside repositories
+- **Version Control (ApnaGit)** — Local CLI-style version control with `init`, `add`, `commit`, `push`, `pull`, and `revert` commands backed by AWS S3
+- **Commit History** — Full commit timeline per repository with snapshot-based rollback
+- **Issue Tracker** — Create and manage issues (open/closed) per repository
+- **Star System** — Star/unstar repositories with live star counts
+- **User Profiles** — View and update profiles, see starred repositories and contribution heatmap
+- **AI Features (Gemini-powered)**
+  - Auto-generate commit messages based on file diffs
+  - AI code review for any file
+  - Auto-generate a `README.md` for any repository
+- **Real-time** — Socket.io integration for live user room connections
+- **Dashboard** — Browse all public repositories with last-commit timestamps
 
 ---
 
-### 📂 Repository Management
+## 🛠 Tech Stack
 
-- Create Repository
-- Public & Private Repository Support
-- Repository Description
-- Dashboard showing all repositories
-- Repository Details Page
-- Fork Repository
-- Star Repository
-- Repository Search 
-
----
-
-### 📁 File Management
-
-- Create Files
-- Edit Files
-- Delete Files
-- View File Contents
-- Automatic Version Tracking
+| Layer | Technology |
+|---|---|
+| Frontend | React 18, React Router v6, Primer React, Vite |
+| Backend | Node.js, Express 5, Yargs (CLI) |
+| Database | MongoDB (Mongoose ODM) |
+| Auth | JWT, bcryptjs |
+| Storage | AWS S3 (push/pull commits) |
+| AI | Google Gemini (`@google/generative-ai`) |
+| Real-time | Socket.io |
+| Dev Tools | Nodemon, Oxlint |
 
 ---
 
-### 📝 Commit System
-
-- Manual Commit Messages
-- AI Generated Commit Messages
-- Commit History
-- Track File Changes
-- Repository Timeline
-
----
-
-### 🤖 AI Features (Google Gemini)
-
-#### AI Commit Message Generator
-
-Automatically generates meaningful commit messages based on file changes.
-
-Example:
+## 📁 Project Structure
 
 ```
-feat: add user authentication
-```
-
----
-
-#### AI README Generator
-
-Automatically scans the repository and creates a professional README.md.
-
----
-
-### 👤 User Profile
-
-- Repository Count
-- Contribution Heatmap
-- User Information
-
----
-
-### 📊 Contribution Graph
-
-GitHub-style contribution heatmap showing daily activity.
-
----
-
-### 🔄 Version Control
-
-- Repository Snapshots
-- File Version Tracking
-- Commit History
-
----
-
-### ⚡ Real-Time Features
-
-Using Socket.IO
-
-- Live Updates
-- Instant Repository Changes
-
----
-
-## 🛠️ Tech Stack
-
-### Frontend
-
-- React
-- Vite
-- React Router
-- Axios
-- Primer React UI
-- Heat Map
-- CSS
-
-### Backend
-
-- Node.js
-- Express.js
-- MongoDB
-- Mongoose
-- JWT
-- Socket.IO
-- AWS SDK
-
-### AI
-
-- Google Gemini API
-
----
-
-## 📂 Project Structure
-
-```
-GitHub-Clone
+git-hubP/
+├── backend/
+│   ├── config/
+│   │   └── aws-config.js         # AWS S3 configuration
+│   ├── controllers/
+│   │   ├── userController.js     # Auth, profile, stars
+│   │   ├── repoController.js     # Repository CRUD + fork
+│   │   ├── commitController.js   # Commit creation & history
+│   │   ├── fileController.js     # File CRUD
+│   │   ├── issueController.js    # Issue management
+│   │   ├── aiController.js       # Gemini AI features
+│   │   ├── init.js               # CLI: init repo
+│   │   ├── add.js                # CLI: stage files
+│   │   ├── commit.js             # CLI: commit
+│   │   ├── push.js               # CLI: push to S3
+│   │   ├── pull.js               # CLI: pull from S3
+│   │   └── revert.js             # CLI: revert commit
+│   ├── middleware/
+│   │   ├── authMiddleware.js     # JWT verification
+│   │   └── authorizeMiddleware.js
+│   ├── models/
+│   │   ├── userModel.js
+│   │   ├── repoModel.js
+│   │   ├── commitModel.js
+│   │   ├── issueModel.js
+│   │   ├── versionModel.js
+│   │   └── File.js
+│   ├── routes/
+│   │   ├── main.router.js
+│   │   ├── user.router.js
+│   │   ├── repo.router.js
+│   │   ├── commit.router.js
+│   │   ├── file.router.js
+│   │   ├── issue.router.js
+│   │   └── ai.router.js
+│   ├── services/
+│   │   ├── VersionControl.js     # Snapshot-based commit engine
+│   │   └── gemini.service.js     # Gemini API wrapper
+│   ├── utils/
+│   │   ├── createSnapshot.js     # File snapshot utility
+│   │   └── prompts.js            # AI prompt templates
+│   └── index.js                  # Entry point (server + CLI)
 │
-├── frontend
-│   ├── React
-│   ├── Components
-│   └── API
-│
-├── backend
-│   ├── Controllers
-│   ├── Models
-│   ├── Routes
-│   ├── Services
-│   ├── Middleware
-│   └── Utils
-│
-└── README.md
+└── frontend/
+    ├── src/
+    │   ├── components/
+    │   │   ├── auth/             # Login, Signup
+    │   │   ├── dashboard/        # Repository feed
+    │   │   ├── repository/       # Repo view, files, commits
+    │   │   ├── file/             # File viewer/editor
+    │   │   ├── create/           # Create repository form
+    │   │   ├── user/             # Profile, HeatMap
+    │   │   └── Navbar.jsx
+    │   ├── api/
+    │   │   └── ai.js             # AI API calls
+    │   ├── authContext.jsx       # Auth state management
+    │   ├── Routes.jsx            # App routing
+    │   └── main.jsx
+    └── vite.config.js
 ```
 
 ---
 
-## 🚀 Installation
+## 🚀 Getting Started
 
-### Clone Repository
+### Prerequisites
+
+- Node.js v18+
+- MongoDB Atlas account (or local MongoDB)
+- AWS account with an S3 bucket
+- Google Gemini API key
+
+### 1. Clone the Repository
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/your-username/git-hubP.git
+cd git-hubP
 ```
 
----
-
-### Backend
+### 2. Backend Setup
 
 ```bash
 cd backend
 npm install
+```
+
+Create a `.env` file in the `backend/` directory:
+
+```env
+MONGODB_URI=your_mongodb_connection_string
+PORT=3002
+JWT_SECRET_KEY=your_jwt_secret
+GEMINI_API_KEY=your_gemini_api_key
+```
+
+Update `config/aws-config.js` with your S3 bucket name:
+
+```js
+const S3_BUCKET = "your-s3-bucket-name";
+```
+
+Start the server:
+
+```bash
 npm start
 ```
 
----
+The server runs on `http://localhost:3002`.
 
-### Frontend
+### 3. Frontend Setup
 
 ```bash
-cd frontend
+cd ../frontend
 npm install
 npm run dev
 ```
 
+The frontend runs on `http://localhost:5173`.
+
 ---
 
-## 🔑 Environment Variables
+## 🖥 CLI Usage (ApnaGit)
 
-Backend `.env`
+The backend also supports a Git-like CLI for local version control synced to AWS S3.
 
-```env
-MONGODB_URI=
-JWT_SECRET=
-GEMINI_API_KEY=
-AWS_ACCESS_KEY_ID=
-AWS_SECRET_ACCESS_KEY=
-AWS_REGION=
+```bash
+# Initialize a new local repository
+node index.js init
+
+# Stage a file
+node index.js add <filename>
+
+# Commit staged files
+node index.js commit "your commit message"
+
+# Push commits to AWS S3
+node index.js push
+
+# Pull commits from AWS S3
+node index.js pull
+
+# Revert to a specific commit
+node index.js revert <commitID>
 ```
 
-Frontend `.env`
+---
 
-```env
-VITE_API_URL=http://localhost:3000
-```
+## 🔌 API Reference
+
+### Auth & Users
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/signup` | Register a new user |
+| POST | `/login` | Login and receive JWT |
+| GET | `/userProfile/:id` | Get user profile |
+| PUT | `/updateProfile/:id` | Update profile |
+| DELETE | `/deleteProfile/:id` | Delete account |
+| POST | `/star` | Star/unstar a repository |
+| GET | `/starred/:userId` | Get starred repositories |
+
+### Repositories
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/repo/create` | Create a repository |
+| GET | `/repo/all` | Get all repositories |
+| GET | `/repo/:id` | Get repository by ID |
+| GET | `/repo/name/:name` | Get repository by name |
+| GET | `/repo/user/:userID` | Get user's repositories |
+| PUT | `/repo/update/:id` | Update repository |
+| DELETE | `/repo/delete/:id` | Delete repository |
+| PATCH | `/repo/toggle/:id` | Toggle public/private |
+| POST | `/repo/copy/:repoId` | Fork a repository |
+
+### Files
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/file/:repoId` | List files in repository |
+| POST | `/file/` | Upload a file |
+| PUT | `/file/:fileId` | Update file content |
+| DELETE | `/file/:fileId` | Delete a file |
+
+### Commits
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/commit/create` | Create a commit |
+| GET | `/commit/:repoId` | Get commit history |
+| POST | `/commit/revert` | Revert to a commit |
+
+### Issues
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/issue/create` | Open an issue |
+| GET | `/issue/:repoId` | List issues |
+| PATCH | `/issue/close/:id` | Close an issue |
+
+### AI (Gemini)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/ai/commit-message` | Generate a commit message |
+| POST | `/ai/review` | AI code review |
+| POST | `/ai/readme` | Generate README for a repo |
 
 ---
 
-## 📸 Main Modules
+## 🗄 Data Models
 
-- Authentication
-- Dashboard
-- Repository
-- File Editor
-- Commit History
-- AI Commit Generator
-- AI Code Review
-- AI README Generator
-- Issue Tracker
-- User Profile
-- Contribution Graph
+**User** — `username`, `email`, `password`, `repositories[]`, `followedUsers[]`, `starRepos[]`
+
+**Repository** — `name`, `description`, `visibility`, `owner`, `issues[]`, `stars`, `headCommit`
+
+**Commit** — `repo`, `author`, `message`, `action`, `fileName`, `snapshot[]`, `parentCommit`, `createdAt`
+
+**Issue** — `title`, `description`, `status (open/closed)`, `repository`
+
+**File** — `name`, `content`, `repo`, `createdBy`
 
 ---
 
-## 🎯 Future Improvements
+## ⚙️ Environment Variables
 
-- Pull Requests
-- Branch Support
-- Merge Conflicts
-- Notifications
-- Collaborators
-- Markdown Preview
-- Dark/Light Theme
+| Variable | Description |
+|----------|-------------|
+| `MONGODB_URI` | MongoDB connection string |
+| `PORT` | Server port (default: 3002) |
+| `JWT_SECRET_KEY` | Secret for signing JWTs |
+| `GEMINI_API_KEY` | Google Gemini API key |
+
+AWS credentials should be configured via the AWS CLI or environment variables (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`).
+
+> ⚠️ **Security Note:** Never commit your `.env` file. Rotate all credentials before pushing to a public repository.
 
 ---
 
-## 👨‍💻 Author
+## 👤 Author
 
 **Anubhav Dixit**
 
-B.Tech Information Technology
-
-NIT Kurukshetra
-
 ---
 
-## ⭐ If you like this project
+## 📄 License
 
-Give this repository a ⭐ on GitHub!
+This project is licensed under the ISC License.
