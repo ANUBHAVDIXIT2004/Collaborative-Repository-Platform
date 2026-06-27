@@ -14,9 +14,17 @@ A full-stack GitHub Clone built using the MERN Stack that allows users to create
 - Protected Routes
 
 ---
+### ⏪ Version Control
 
+- Complete Commit History
+- Browse Previous Commits
+- Restore Repository to Any Previous Commit
+- Revert Entire Repository to Any Selected Commit
+- Recover Previous File Versions
+- Git-like Version Management
 ### 📂 Repository Management
 
+---
 - Create Repository
 - View All Repositories
 - View Repository Details
@@ -54,10 +62,13 @@ Implemented custom Git-like functionality including:
 
 - Git Init
 - Git Add
-- Git Commit
+- Git Commit with Custom Commit Messages
 - Git Push
 - Git Pull
-- Git Revert
+- View Complete Commit History
+- Restore Repository to Any Previous Commit
+- Revert Repository State to Any Selected Commit
+- Preserve Version History After Revert
 
 ---
 
