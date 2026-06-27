@@ -21,6 +21,9 @@ A full-stack GitHub-inspired version control platform built using **React, Node.
 - Repository Description
 - Dashboard showing all repositories
 - Repository Details Page
+- Fork Repository
+- Star Repository
+- Repository Search 
 
 ---
 
@@ -218,9 +221,6 @@ VITE_API_URL=http://localhost:3000
 - Pull Requests
 - Branch Support
 - Merge Conflicts
-- Fork Repositories
-- Star Repositories
-- Repository Search
 - Notifications
 - Collaborators
 - Markdown Preview
