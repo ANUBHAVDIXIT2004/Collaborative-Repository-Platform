@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import "./repository.css";
-
+import { askRepoAssistant } from '../../api/ai.js';
 const Repository = () => {
   const { repoId } = useParams();
   const navigate = useNavigate();
@@ -20,6 +20,10 @@ const Repository = () => {
   const [commits, setCommits] = useState([]);
   const [readmeLoading, setReadmeLoading] = useState(false);
   const [hasReadme, setHasReadme] = useState(false);
+  const [chatOpen, setChatOpen] = useState(false);
+  const [chatQuestion, setChatQuestion] = useState('');
+  const [chatAnswer, setChatAnswer] = useState('');
+  const [chatLoading, setChatLoading] = useState(false);
 
   useEffect(() => {
     loadRepository();
@@ -53,13 +57,13 @@ const Repository = () => {
 
       if (Array.isArray(data)) {
 
-          setFiles(data);
+        setFiles(data);
 
-          const readmeExists = data.some(
-              file => file.name.toLowerCase() === "readme.md"
-          );
+        const readmeExists = data.some(
+          file => file.name.toLowerCase() === "readme.md"
+        );
 
-          setHasReadme(readmeExists);
+        setHasReadme(readmeExists);
 
       }
     } catch (err) {
@@ -148,48 +152,60 @@ const Repository = () => {
 
     try {
 
-        setReadmeLoading(true);
+      setReadmeLoading(true);
 
-        const response = await fetch(
-            "http://localhost:3002/ai/generate-readme",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    repoId,
-                    userId: currentUser
-                })
-            }
-        );
-
-        const data = await response.json();
-
-        if (!response.ok) {
-
-            alert(data.message);
-
-            return;
-
+      const response = await fetch(
+        "http://localhost:3002/ai/generate-readme",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            repoId,
+            userId: currentUser
+          })
         }
+      );
 
-        alert("README generated successfully!");
+      const data = await response.json();
 
-        loadFiles();
-        loadCommits();
+      if (!response.ok) {
+
+        alert(data.message);
+
+        return;
+
+      }
+
+      alert("README generated successfully!");
+
+      loadFiles();
+      loadCommits();
 
     } catch (err) {
 
-        console.log(err);
+      console.log(err);
 
     } finally {
 
-        setReadmeLoading(false);
+      setReadmeLoading(false);
 
     }
 
-};
+  };
+  const handleAskAssistant = async () => {
+    if (!chatQuestion.trim()) return;
+    setChatLoading(true);
+    try {
+      const data = await askRepoAssistant(repoId, chatQuestion);
+      setChatAnswer(data.answer);
+    } catch (err) {
+      setChatAnswer("Something went wrong. Try again.");
+    } finally {
+      setChatLoading(false);
+    }
+  };
   const createFile = async () => {
 
     if (!name.trim()) {
@@ -372,18 +388,18 @@ const Repository = () => {
     try {
 
       const response = await fetch(
-    `http://localhost:3002/file/${file._id}`,
-    {
-        method: "DELETE",
-        headers: {
+        `http://localhost:3002/file/${file._id}`,
+        {
+          method: "DELETE",
+          headers: {
             "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+          },
+          body: JSON.stringify({
             userId: currentUser,
             commitMessage
-        }),
-    }
-);
+          }),
+        }
+      );
 
       const data = await response.json();
 
@@ -497,7 +513,25 @@ const Repository = () => {
 
             )
           }
+  <button className = "askButton" onClick={() => setChatOpen(!chatOpen)}>
+        Ask about this repo
+      </button>
 
+      {chatOpen && (
+        <div className="chat-box">
+          <textarea
+            placeholder="e.g. How does authentication work here?"
+            value={chatQuestion}
+            onChange={e => setChatQuestion(e.target.value)}
+          />
+          <button onClick={handleAskAssistant} disabled={chatLoading}>
+            {chatLoading ? 'Thinking...' : 'Ask'}
+          </button>
+          {chatAnswer && (
+            <div className="chat-answer">{chatAnswer}</div>
+          )}
+        </div>
+      )}
         </div>
 
       </div>
@@ -512,34 +546,34 @@ const Repository = () => {
             {
               isOwner &&
               <div
-    style={{
-        display: "flex",
-        gap: "10px"
-    }}
->
+                style={{
+                  display: "flex",
+                  gap: "10px"
+                }}
+              >
 
-    <button
-        className="greenButton"
-        onClick={() => setShowForm(!showForm)}
-    >
-        + Add File
-    </button>
+                <button
+                  className="greenButton"
+                  onClick={() => setShowForm(!showForm)}
+                >
+                  + Add File
+                </button>
 
-    <button
-        className="greenButton"
-        onClick={generateReadme}
-        disabled={readmeLoading}
-    >
-        {
-    readmeLoading
-        ? "Generating..."
-        : hasReadme
-            ? "🔄 Regenerate README"
-            : "✨ Generate README"
-}
-    </button>
+                <button
+                  className="greenButton"
+                  onClick={generateReadme}
+                  disabled={readmeLoading}
+                >
+                  {
+                    readmeLoading
+                      ? "Generating..."
+                      : hasReadme
+                        ? "🔄 Regenerate README"
+                        : "✨ Generate README"
+                  }
+                </button>
 
-</div>
+              </div>
             }
           </div>
         </div>
@@ -716,7 +750,9 @@ const Repository = () => {
             ))
         }
       </div>
+      
     </div>
+
   );
 };
 

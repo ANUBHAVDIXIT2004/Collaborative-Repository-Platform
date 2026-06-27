@@ -146,6 +146,15 @@ Rules:
 - Return ONLY Markdown.
 - Do not wrap inside triple backticks.
 - Do not explain anything.
+`,
+REPO_ASSISTANT: (files, question) => `
+You are a code assistant for this repository.
+Here are all the files in the repo:
+
+${files.map(f => `File: ${f.name}\n${f.content}`).join('\n---\n')}
+
+Answer this question based only on the code above:
+${question}
 `
 };
 

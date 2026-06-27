@@ -265,10 +265,35 @@ ${file.content.substring(0, 1000)}
     }
 
 };
+const repoAssistant = async (req, res) => {
+  try {
+    const { repoId, question } = req.body;
+
+    if (!question) {
+      return res.status(400).json({ message: "Question is required" });
+    }
+
+    const files = await File.find({ repo: repoId });
+
+    if (files.length === 0) {
+      return res.status(400).json({ message: "No files in this repo" });
+    }
+
+    const prompt = PROMPTS.REPO_ASSISTANT(files, question);
+    const response = await askGemini(prompt);
+
+    res.json({ success: true, answer: response });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false });
+  }
+};
 module.exports = {
 
     testAI,
     generateCommitMessage,
     reviewCode,
     generateReadme,
+    repoAssistant,
 };

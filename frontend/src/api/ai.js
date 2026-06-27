@@ -57,3 +57,11 @@ export const generateReadme = async (repoId, userId) => {
     return res.data;
 
 };
+export const askRepoAssistant = async (repoId, question) => {
+  const response = await fetch('http://localhost:3002/ai/repo-assistant', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ repoId, question })
+  });
+  return response.json();
+};

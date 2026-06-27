@@ -23,4 +23,5 @@ router.post(
     "/generate-readme",
     aiController.generateReadme
 );
+router.post('/repo-assistant',aiController.repoAssistant);
 module.exports = router;
