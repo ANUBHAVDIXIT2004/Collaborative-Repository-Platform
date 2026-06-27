@@ -1,7 +1,6 @@
 const File = require("../models/File");
 const Repository = require("../models/repoModel");
-const Commit = require("../models/commitModel");
-const createSnapshot=require("../utils/createSnapshot");
+const VersionControl = require("../services/VersionControl");
 
 const createFile = async (req, res) => {
     try {
@@ -43,21 +42,21 @@ const createFile = async (req, res) => {
             createdBy: userId
         });
 
-        const snapshot = await createSnapshot(repoId);
 
-        await Commit.create({
+        const commit = await VersionControl.commit({
 
-            repo:repoId,
-            parentCommit:repo.headCommit,
-            author:userId,
-            message:req.body.commitMessage,
-            action:"ADD",
-            fileName:name,
-            snapshot
+            repoId,
+
+            userId,
+
+            message: req.body.commitMessage,
+
+            action: "ADD",
+
+            fileName: name
+
         });
 
-        repo.headCommit=commit._id;
-        await repo.save();
 
         res.status(201).json(file);
 
@@ -106,68 +105,59 @@ const getFileById = async (req, res) => {
 };
 
 const deleteFile = async (req, res) => {
-  try {
+    try {
 
-    const { fileId } = req.params;
-    const { userId } = req.body;
+        const { fileId } = req.params;
+        const { userId } = req.body;
 
-    const file = await File.findById(fileId);
+        const file = await File.findById(fileId);
 
-    if (!file) {
-      return res.status(404).json({
-        message: "File not found"
-      });
+        if (!file) {
+            return res.status(404).json({
+                message: "File not found"
+            });
+        }
+
+        const repo = await Repository.findById(file.repo);
+
+        if (!repo) {
+            return res.status(404).json({
+                message: "Repository not found"
+            });
+        }
+
+        if (repo.owner.toString() !== userId) {
+            return res.status(403).json({
+                message: "You are not allowed to delete this file"
+            });
+        }
+
+
+        const commit = await VersionControl.commit({
+
+            repoId: repo._id,
+
+            userId,
+
+            message: req.body.commitMessage,
+
+            action: "DELETE",
+
+            fileName: file.name
+
+        });
+
+        await File.findByIdAndDelete(fileId);
+
+        res.json({
+            message: "File deleted successfully"
+        });
+
+    } catch (err) {
+        res.status(500).json({
+            message: err.message
+        });
     }
-
-    const repo = await Repository.findById(file.repo);
-
-    if (!repo) {
-      return res.status(404).json({
-        message: "Repository not found"
-      });
-    }
-
-    if (repo.owner.toString() !== userId) {
-      return res.status(403).json({
-        message: "You are not allowed to delete this file"
-      });
-    }
-
-    const snapshot=await createSnapshot(repo._id);
-
-    const commit=await Commit.create({
-
-        repo:repo._id,
-
-        parentCommit:repo.headCommit,
-
-        author:userId,
-
-        message:req.body.commitMessage,
-
-        action:"DELETE",
-
-        fileName:file.name,
-
-        snapshot
-
-    });
-
-    repo.headCommit=commit._id;
-
-    await repo.save();
-
-    await File.findByIdAndDelete(fileId);
-
-    res.json({
-        message: "File deleted successfully"
-    });
-
-  } catch (err) {
-    res.status(500).json({
-      message: err.message
-    });
-  }
 };
 
 const editFile = async (req, res) => {
@@ -214,29 +204,22 @@ const editFile = async (req, res) => {
 
         await file.save();
 
-        const snapshot = await createSnapshot(repo._id);
 
-        const commit = await Commit.create({
+        const commit = await VersionControl.commit({
 
-            repo: repo._id,
+            repoId: repo._id,
 
-            parentCommit: repo.headCommit,
-
-            author: userId,
+            userId,
 
             message: commitMessage,
 
             action: "EDIT",
 
-            fileName: file.name,
-
-            snapshot
+            fileName: file.name
 
         });
 
-        repo.headCommit = commit._id;
 
-        await repo.save();
 
         res.json({
 

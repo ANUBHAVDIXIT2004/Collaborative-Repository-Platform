@@ -249,6 +249,50 @@ const Repository = () => {
 
   };
 
+  const resetCommit = async (commitId) => {
+
+    const confirmReset = window.confirm(
+      "Reset repository to this commit?"
+    );
+
+    if (!confirmReset) return;
+
+    try {
+
+      const response = await fetch(
+        `http://localhost:3002/commit/reset/${commitId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId: currentUser,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.message);
+        return;
+      }
+
+      alert("Repository restored successfully!");
+
+      // Reload everything
+      loadFiles();
+      loadCommits();
+      loadRepository();
+
+    } catch (err) {
+
+      console.log(err);
+
+    }
+
+  };
   return (
     <div className="repoContainer">
 
@@ -388,17 +432,17 @@ const Repository = () => {
                     Delete
                   </button>
                 )
-                
+
               }
               {
                 isOwner && (<button
                   className="editFileButton"
                   onClick={() =>
-                      navigate(`/repo/${repoId}/file/${file._id}`)
+                    navigate(`/repo/${repoId}/file/${file._id}`)
                   }
-              >
+                >
                   Edit
-              </button>)
+                </button>)
               }
             </div>
 
@@ -440,9 +484,31 @@ const Repository = () => {
 
                 </div>
 
-                <small>
-                  {new Date(commit.createdAt).toLocaleString()}
-                </small>
+                <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "flex-end",
+                      gap: "10px"
+                    }}
+                  >
+
+                    <small>
+                      {new Date(commit.createdAt).toLocaleString()}
+                    </small>
+
+                    {
+                      isOwner && (
+                        <button
+                          className="resetButton"
+                          onClick={() => resetCommit(commit._id)}
+                        >
+                          Reset Here
+                        </button>
+                      )
+                    }
+
+                  </div>
 
               </div>
 

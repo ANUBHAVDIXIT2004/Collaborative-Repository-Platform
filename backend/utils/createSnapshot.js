@@ -1,19 +1,21 @@
 const File = require("../models/File");
 
-async function createSnapshot(repoId){
+const createSnapshot = async (repoId) => {
 
     const files = await File.find({
-        repo:repoId
+
+        repo: repoId
+
     });
 
-    return files.map(file=>({
+    return files.map(file => ({
 
-        name:file.name,
+        name: file.name,
 
-        content:file.content
+        content: file.content
 
     }));
 
-}
+};
 
-module.exports=createSnapshot;
+module.exports = createSnapshot;

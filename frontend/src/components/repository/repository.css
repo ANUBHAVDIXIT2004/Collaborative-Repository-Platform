@@ -184,6 +184,31 @@ body{
     border-color: #94d3a2;
     cursor: not-allowed;
 }
+.resetButton{
+
+    background:#238636;
+
+    color:white;
+
+    border:none;
+
+    padding:8px 14px;
+
+    border-radius:6px;
+
+    cursor:pointer;
+
+    font-size:13px;
+
+    transition:.3s;
+
+}
+
+.resetButton:hover{
+
+    background:#2ea043;
+
+}
 /* ===========================
    Add File Card
 =========================== */
