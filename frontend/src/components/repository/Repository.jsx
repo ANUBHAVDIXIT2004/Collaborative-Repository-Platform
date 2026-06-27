@@ -18,6 +18,8 @@ const Repository = () => {
   const [starred, setStarred] = useState(false);
   const [starLoading, setStarLoading] = useState(false);
   const [commits, setCommits] = useState([]);
+  const [readmeLoading, setReadmeLoading] = useState(false);
+  const [hasReadme, setHasReadme] = useState(false);
 
   useEffect(() => {
     loadRepository();
@@ -49,8 +51,17 @@ const Repository = () => {
       const response = await fetch(`http://localhost:3002/file/${repoId}`);
       const data = await response.json();
 
-      if (Array.isArray(data))
-        setFiles(data);
+      if (Array.isArray(data)) {
+
+          setFiles(data);
+
+          const readmeExists = data.some(
+              file => file.name.toLowerCase() === "readme.md"
+          );
+
+          setHasReadme(readmeExists);
+
+      }
     } catch (err) {
       console.log(err);
     }
@@ -133,7 +144,52 @@ const Repository = () => {
     }
 
   };
-  
+  const generateReadme = async () => {
+
+    try {
+
+        setReadmeLoading(true);
+
+        const response = await fetch(
+            "http://localhost:3002/ai/generate-readme",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    repoId,
+                    userId: currentUser
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+
+            alert(data.message);
+
+            return;
+
+        }
+
+        alert("README generated successfully!");
+
+        loadFiles();
+        loadCommits();
+
+    } catch (err) {
+
+        console.log(err);
+
+    } finally {
+
+        setReadmeLoading(false);
+
+    }
+
+};
   const createFile = async () => {
 
     if (!name.trim()) {
@@ -307,7 +363,7 @@ const Repository = () => {
     }
 
   };
-  const deleteFile = async (fileId) => {
+  const deleteFile = async (file) => {
 
     const commitMessage = prompt("Enter commit message");
 
@@ -316,25 +372,18 @@ const Repository = () => {
     try {
 
       const response = await fetch(
-        `http://localhost:3002/file/${fileId}`,
-        {
-          method: "DELETE",
-          headers: {
+    `http://localhost:3002/file/${file._id}`,
+    {
+        method: "DELETE",
+        headers: {
             "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-
-            action: "Delete File",
-
-            fileName: file.name,
-
-            oldContent: file.content,
-
-            newContent: ""
-
-          }),
-        }
-      );
+        },
+        body: JSON.stringify({
+            userId: currentUser,
+            commitMessage
+        }),
+    }
+);
 
       const data = await response.json();
 
@@ -462,12 +511,35 @@ const Repository = () => {
 
             {
               isOwner &&
-              <button
-                className="greenButton"
-                onClick={() => setShowForm(!showForm)}
-              >
-                + Add File
-              </button>
+              <div
+    style={{
+        display: "flex",
+        gap: "10px"
+    }}
+>
+
+    <button
+        className="greenButton"
+        onClick={() => setShowForm(!showForm)}
+    >
+        + Add File
+    </button>
+
+    <button
+        className="greenButton"
+        onClick={generateReadme}
+        disabled={readmeLoading}
+    >
+        {
+    readmeLoading
+        ? "Generating..."
+        : hasReadme
+            ? "🔄 Regenerate README"
+            : "✨ Generate README"
+}
+    </button>
+
+</div>
             }
           </div>
         </div>
@@ -556,7 +628,7 @@ const Repository = () => {
                 isOwner && (
                   <button
                     className="deleteFileButton"
-                    onClick={() => deleteFile(file._id)}
+                    onClick={() => deleteFile(file)}
                   >
                     Delete
                   </button>

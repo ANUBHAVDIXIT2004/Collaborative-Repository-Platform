@@ -44,3 +44,16 @@ language
 return res.data;
 
 }
+export const generateReadme = async (repoId, userId) => {
+
+    const res = await API.post(
+        "/api/ai/generate-readme",
+        {
+            repoId,
+            userId
+        }
+    );
+
+    return res.data;
+
+};

@@ -88,6 +88,64 @@ Code:
 
 ${code}
 
+`,
+README_GENERATOR: (repoName, description, files) => `
+
+You are an expert open-source software engineer.
+
+Generate a professional README.md for the following GitHub repository.
+
+Repository Name:
+${repoName}
+
+Description:
+${description || "No description provided."}
+
+Repository Files:
+
+${files}
+
+Write a complete README.md in Markdown.
+
+Include these sections:
+
+# Project Title
+
+A short project description.
+
+## Features
+
+Mention the possible features based on the files.
+
+## Project Structure
+
+Briefly describe the project structure.
+
+## Installation
+
+Provide installation steps.
+
+## Usage
+
+Explain how to run the project.
+
+## Technologies Used
+
+Infer technologies from the files.
+
+## Future Improvements
+
+Suggest a few improvements.
+
+## License
+
+MIT License.
+
+Rules:
+
+- Return ONLY Markdown.
+- Do not wrap inside triple backticks.
+- Do not explain anything.
 `
 };
 
