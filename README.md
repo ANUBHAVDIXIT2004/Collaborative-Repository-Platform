@@ -58,28 +58,9 @@ feat: add user authentication
 
 ---
 
-#### AI Code Review
-
-Paste code and receive:
-
-- Bugs
-- Suggestions
-- Improvements
-- Best Practices
-
----
-
 #### AI README Generator
 
 Automatically scans the repository and creates a professional README.md.
-
----
-
-### 🐛 Issue Management
-
-- Create Issues
-- Repository-wise Issues
-- Track Open Issues
 
 ---
 
