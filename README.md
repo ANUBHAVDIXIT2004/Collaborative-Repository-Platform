@@ -22,9 +22,10 @@ A full-stack GitHub Clone built using the MERN Stack that allows users to create
 - Revert Entire Repository to Any Selected Commit
 - Recover Previous File Versions
 - Git-like Version Management
+  
+---
 ### 📂 Repository Management
 
----
 - Create Repository
 - View All Repositories
 - View Repository Details
