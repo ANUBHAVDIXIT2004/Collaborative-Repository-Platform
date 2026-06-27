@@ -388,8 +388,18 @@ const Repository = () => {
                     Delete
                   </button>
                 )
+                
               }
-
+              {
+                isOwner && (<button
+                  className="editFileButton"
+                  onClick={() =>
+                      navigate(`/repo/${repoId}/file/${file._id}`)
+                  }
+              >
+                  Edit
+              </button>)
+              }
             </div>
 
           ))

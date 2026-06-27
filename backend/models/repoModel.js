@@ -33,6 +33,11 @@ const RepositorySchema = new Schema({
     type: Number,
     default: 0
   },
+    headCommit:{
+      type:mongoose.Schema.Types.ObjectId,
+      ref:"Commit",
+      default:null
+  },
 });
 
 const Repository = mongoose.model("Repository", RepositorySchema);

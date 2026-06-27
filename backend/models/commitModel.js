@@ -1,11 +1,33 @@
 const mongoose = require("mongoose");
 
-const commitSchema = new mongoose.Schema(
+const snapshotFileSchema = new mongoose.Schema(
 {
+    name:{
+        type:String,
+        required:true
+    },
+
+    content:{
+        type:String,
+        default:""
+    }
+},
+{
+    _id:false
+});
+
+const commitSchema = new mongoose.Schema({
+
     repo:{
         type:mongoose.Schema.Types.ObjectId,
         ref:"Repository",
         required:true
+    },
+
+    parentCommit:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Commit",
+        default:null
     },
 
     author:{
@@ -21,18 +43,19 @@ const commitSchema = new mongoose.Schema(
 
     action:{
         type:String,
-        enum:["ADD","DELETE","EDIT"],
+        enum:["ADD","DELETE","EDIT","RESET"],
         required:true
     },
 
     fileName:{
         type:String,
-        required:true
-    }
+        default:"Repository"
+    },
 
-},
-{
+    snapshot:[snapshotFileSchema]
+
+},{
     timestamps:true
 });
 
-module.exports = mongoose.model("Commit", commitSchema);
+module.exports = mongoose.model("Commit",commitSchema);

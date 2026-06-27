@@ -158,6 +158,32 @@ body{
 .deleteFileButton:hover{
     background:#f85149;
 }
+.editFileButton {
+    background-color: #2da44e;
+    color: white;
+    border: 1px solid #2da44e;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.editFileButton:hover {
+    background-color: #218739;
+    border-color: #218739;
+}
+
+.editFileButton:active {
+    transform: scale(0.97);
+}
+
+.editFileButton:disabled {
+    background-color: #94d3a2;
+    border-color: #94d3a2;
+    cursor: not-allowed;
+}
 /* ===========================
    Add File Card
 =========================== */
