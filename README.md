@@ -19,6 +19,7 @@ The version control engine (`BitHub`) works as both a **CLI tool** and a **web-b
 **Platform**
 - JWT-based auth with bcrypt password hashing
 - Create, fork, delete, and toggle visibility of repositories
+- Pull Request system — fork a repo, make changes, send a PR; owner can merge or close
 - Star/unstar repositories with live star counts
 - User profiles with contribution heatmap
 - Issue tracker (open/close) per repository
@@ -67,6 +68,7 @@ git-hubP/
 │   │   ├── fileController.js     # File CRUD
 │   │   ├── issueController.js    # Issue management
 │   │   ├── aiController.js       # Gemini AI features
+│   │   ├── prController.js       # Pull Request system
 │   │   ├── init.js               # CLI: init
 │   │   ├── add.js                # CLI: stage
 │   │   ├── commit.js             # CLI: commit
@@ -81,6 +83,7 @@ git-hubP/
 │   │   ├── repoModel.js
 │   │   ├── commitModel.js
 │   │   ├── issueModel.js
+│   │   ├── pullRequestModel.js
 │   │   └── File.js
 │   ├── routes/
 │   │   ├── user.router.js
@@ -88,7 +91,8 @@ git-hubP/
 │   │   ├── commit.router.js
 │   │   ├── file.router.js
 │   │   ├── issue.router.js
-│   │   └── ai.router.js
+│   │   ├── ai.router.js
+│   │   └── pr.router.js
 │   ├── services/
 │   │   ├── VersionControl.js     # Core commit engine
 │   │   └── gemini.service.js     # Gemini API wrapper
@@ -102,7 +106,7 @@ git-hubP/
         ├── components/
         │   ├── auth/             # Login, Signup
         │   ├── dashboard/        # Repository feed
-        │   ├── repository/       # Repo view, files, commits
+        │   ├── repository/       # Repo view, files, commits, PRs
         │   ├── file/             # File viewer/editor
         │   ├── create/           # Create repository
         │   └── user/             # Profile, HeatMap
@@ -217,6 +221,14 @@ node index.js revert <commitID>           # Revert to a past commit
 | GET | `/commit/:repoId` | Commit history |
 | POST | `/commit/revert` | Revert to commit |
 
+### Pull Requests
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/pr/create` | Open a pull request |
+| GET | `/pr/:repoId` | Get open PRs for a repo |
+| POST | `/pr/merge/:prId` | Merge a pull request |
+| PATCH | `/pr/close/:prId` | Close a pull request |
+
 ### Issues
 | Method | Endpoint | Description |
 |--------|----------|-------------|
@@ -228,7 +240,6 @@ node index.js revert <commitID>           # Revert to a past commit
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | POST | `/ai/commit-message` | Generate commit message |
-| POST | `/ai/review` | Code review |
 | POST | `/ai/readme` | Generate README |
 | POST | `/ai/repo-assistant` | RepoChat — ask questions about any repo |
 
@@ -238,9 +249,11 @@ node index.js revert <commitID>           # Revert to a past commit
 
 **User** — `username`, `email`, `password (hashed)`, `repositories[]`, `followedUsers[]`, `starRepos[]`
 
-**Repository** — `name`, `description`, `visibility`, `owner`, `issues[]`, `stars`, `headCommit`
+**Repository** — `name`, `description`, `visibility`, `owner`, `issues[]`, `stars`, `headCommit`, `forkedFrom`
 
-**Commit** — `repo`, `author`, `message`, `action`, `fileName`, `snapshot[]`, `parentCommit`, `createdAt`
+**Commit** — `repo`, `author`, `message`, `action (ADD/EDIT/DELETE/RESET/RESTORE/MERGE)`, `fileName`, `snapshot[]`, `parentCommit`, `createdAt`
+
+**PullRequest** — `title`, `description`, `fromRepo`, `toRepo`, `author`, `status (open/merged/closed)`
 
 **Issue** — `title`, `description`, `status (open/closed)`, `repository`
 
@@ -269,7 +282,7 @@ This project intentionally focuses on core platform and version control primitiv
 
 - **Branching** — Currently single linear history per repo (one HEAD pointer)
 - **Diff generation** — Commits store full snapshots; delta computation is not yet implemented
-- **Merge / conflict resolution** — No multi-branch merging
+- **Merge conflict resolution** — PR merge does a full file replacement; no line-level conflict detection
 - **Distributed sync protocol** — S3 push/pull is a backup mechanism, not a true distributed VCS protocol
 
 These are the natural next steps for anyone looking to contribute or extend the project.
