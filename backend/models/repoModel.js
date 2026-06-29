@@ -38,6 +38,7 @@ const RepositorySchema = new Schema({
       ref:"Commit",
       default:null
   },
+  forkedFrom: { type: mongoose.Schema.Types.ObjectId, ref: "Repository", default: null },
 });
 
 const Repository = mongoose.model("Repository", RepositorySchema);

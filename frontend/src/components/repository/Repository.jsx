@@ -24,12 +24,16 @@ const Repository = () => {
   const [chatQuestion, setChatQuestion] = useState('');
   const [chatAnswer, setChatAnswer] = useState('');
   const [chatLoading, setChatLoading] = useState(false);
-
+  const [showPRForm, setShowPRForm] = useState(false);
+  const [prTitle, setPrTitle] = useState("");
+  const [prDesc, setPrDesc] = useState("");
+  const [pullRequests, setPullRequests] = useState([]);
   useEffect(() => {
     loadRepository();
     loadFiles();
     checkStar();
     loadCommits();
+    loadPRs();
   }, []);
 
   const loadRepository = async () => {
@@ -461,6 +465,72 @@ const Repository = () => {
     }
 
   };
+  const loadPRs = async () => {
+    try {
+      const response = await fetch(`http://localhost:3002/pr/${repoId}`);
+      const data = await response.json();
+      setPullRequests(data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleCreatePR = async () => {
+    if (!prTitle.trim()) return alert("Title is required");
+    try {
+      const response = await fetch("http://localhost:3002/pr/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: prTitle,
+          description: prDesc,
+          fromRepo: repoId,
+          toRepo: repo?.forkedFrom,
+          userId: currentUser,
+        }),
+      });
+      const data = await response.json();
+      if (!response.ok) return alert(data.message);
+      alert("Pull request sent!");
+      setShowPRForm(false);
+      setPrTitle("");
+      setPrDesc("");
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleMergePR = async (prId) => {
+    const confirm = window.confirm("Merge this pull request?");
+    if (!confirm) return;
+    try {
+      const response = await fetch(`http://localhost:3002/pr/merge/${prId}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: currentUser }),
+      });
+      const data = await response.json();
+      if (!response.ok) return alert(data.message);
+      alert("Merged successfully!");
+      loadFiles();
+      loadCommits();
+      loadPRs();
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleClosePR = async (prId) => {
+    try {
+      await fetch(`http://localhost:3002/pr/close/${prId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+      });
+      loadPRs();
+    } catch (err) {
+      console.log(err);
+    }
+  };
   return (
     <div className="repoContainer">
 
@@ -491,7 +561,11 @@ const Repository = () => {
           >
             ⭐ {starred ? "Starred" : "Star"} ({repo?.stars || 0})
           </button>
-
+          {isOwner && repo?.forkedFrom && (
+            <button className="askButton" onClick={() => setShowPRForm(!showPRForm)}>
+              ⬆ Open Pull Request
+            </button>
+          )}
           {
             isOwner ? (
 
@@ -513,29 +587,66 @@ const Repository = () => {
 
             )
           }
-  <button className = "askButton" onClick={() => setChatOpen(!chatOpen)}>
-        Ask about this repo
-      </button>
-
-      {chatOpen && (
-        <div className="chat-box">
-          <textarea
-            placeholder="e.g. How does authentication work here?"
-            value={chatQuestion}
-            onChange={e => setChatQuestion(e.target.value)}
-          />
-          <button onClick={handleAskAssistant} disabled={chatLoading}>
-            {chatLoading ? 'Thinking...' : 'Ask'}
+          <button className="askButton" onClick={() => setChatOpen(!chatOpen)}>
+            Ask about this repo
           </button>
-          {chatAnswer && (
-            <div className="chat-answer">{chatAnswer}</div>
+
+          {chatOpen && (
+            <div className="chat-box">
+              <textarea
+                placeholder="e.g. How does authentication work here?"
+                value={chatQuestion}
+                onChange={e => setChatQuestion(e.target.value)}
+              />
+              <button onClick={handleAskAssistant} disabled={chatLoading}>
+                {chatLoading ? 'Thinking...' : 'Ask'}
+              </button>
+              {chatAnswer && (
+                <div className="chat-answer">{chatAnswer}</div>
+              )}
+            </div>
           )}
-        </div>
-      )}
         </div>
 
       </div>
-
+      {showPRForm && (
+        <div className="chat-box">
+          <h3 style={{ color: "#e6edf3", margin: "0 0 10px 0" }}>Open Pull Request</h3>
+          <input
+            type="text"
+            placeholder="PR Title"
+            value={prTitle}
+            onChange={e => setPrTitle(e.target.value)}
+            style={{
+              width: "100%",
+              padding: "10px",
+              background: "#0d1117",
+              border: "1px solid #30363d",
+              borderRadius: "6px",
+              color: "#e6edf3",
+              boxSizing: "border-box"
+            }}
+          />
+          <textarea
+            placeholder="Describe your changes..."
+            value={prDesc}
+            onChange={e => setPrDesc(e.target.value)}
+            rows={4}
+            style={{
+              width: "100%",
+              padding: "10px",
+              background: "#0d1117",
+              border: "1px solid #30363d",
+              borderRadius: "6px",
+              color: "#e6edf3",
+              boxSizing: "border-box"
+            }}
+          />
+          <button className="greenButton" onClick={handleCreatePR}>
+            Submit Pull Request
+          </button>
+        </div>
+      )}
       <hr />
 
       <div>
@@ -750,7 +861,30 @@ const Repository = () => {
             ))
         }
       </div>
-      
+          {isOwner && pullRequests.length > 0 && (
+  <div className="commitCard">
+    <h2>Pull Requests</h2>
+    {pullRequests.map(pr => (
+      <div key={pr._id} className="commitRow">
+        <div>
+          <div className="commitMessage">{pr.title}</div>
+          <div className="commitInfo">{pr.description}</div>
+          <div className="commitAuthor">
+            from {pr.fromRepo?.name} by {pr.author?.username}
+          </div>
+        </div>
+        <div style={{ display: "flex", gap: "8px" }}>
+          <button className="greenButton" onClick={() => handleMergePR(pr._id)}>
+            Merge
+          </button>
+          <button className="deleteButton" onClick={() => handleClosePR(pr._id)}>
+            Close
+          </button>
+        </div>
+      </div>
+    ))}
+  </div>
+)}
     </div>
 
   );

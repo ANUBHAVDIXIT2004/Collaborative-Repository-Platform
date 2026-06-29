@@ -6,7 +6,8 @@ const fileRouter = require("./file.router");
 const commitRouter = require("./commit.router");
 const aiRoutes = require("./ai.router");
 const mainRouter = express.Router();
-
+const prRouter = require("./pr.router");
+mainRouter.use("/pr", prRouter);
 mainRouter.use(userRouter);
 mainRouter.use(repoRouter);
 mainRouter.use(issueRouter);

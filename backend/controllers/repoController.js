@@ -307,7 +307,8 @@ async function copyRepository(req, res) {
 
       headCommit: null,
 
-      content: []
+      content: [],
+      forkedFrom: repoId
 
     });
 

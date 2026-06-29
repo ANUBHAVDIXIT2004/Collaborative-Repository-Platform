@@ -72,7 +72,8 @@ const commitSchema = new mongoose.Schema({
             "EDIT",
             "DELETE",
             "RESET",
-            "RESTORE"
+            "RESTORE",
+            "MERGE"
         ],
 
         required:true
