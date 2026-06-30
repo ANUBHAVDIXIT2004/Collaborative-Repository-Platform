@@ -30,7 +30,7 @@ The version control engine (`BitHub`) works as both a **CLI tool** and a **web-b
 - User profiles with contribution heatmap
 - Issue tracker (open/close) per repository
 - Dashboard with all public repositories and last-commit timestamps
-- Real-time user rooms via Socket.io
+- Real-time PR notifications via Socket.io — repo owner gets notified instantly when a pull request is opened, no refresh needed
 
 **Version Control Engine (BitHub)**
 - CLI commands: `init`, `add`, `commit`, `push`, `pull`, `revert`
