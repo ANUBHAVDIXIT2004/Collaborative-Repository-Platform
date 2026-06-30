@@ -97,7 +97,10 @@ function startServer() {
   const httpServer = http.createServer(app);
  const io = new Server(httpServer, {
   cors: {
-    origin: "http://localhost:5173",
+    origin: [
+      "http://localhost:5173",
+      "https://collaborative-repository-platform-t.vercel.app"  // replace with your actual Vercel URL after deploying
+    ],
     credentials: true,
     methods: ["GET", "POST"],
   },
