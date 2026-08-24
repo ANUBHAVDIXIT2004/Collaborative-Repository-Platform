@@ -29,6 +29,9 @@ const Repository = () => {
   const [prTitle, setPrTitle] = useState("");
   const [prDesc, setPrDesc] = useState("");
   const [pullRequests, setPullRequests] = useState([]);
+  const [activePRDiff, setActivePRDiff] = useState(null);
+  const [diffData, setDiffData] = useState([]);
+  const [diffLoading, setDiffLoading] = useState(false);
   useEffect(() => {
     loadRepository();
     loadFiles();
@@ -532,6 +535,19 @@ const Repository = () => {
       console.log(err);
     }
   };
+  const loadPRDiff = async (prId) => {
+  setDiffLoading(true);
+  setActivePRDiff(prId);
+  try {
+    const response = await fetch(`${BASE_URL}/pr/diff/${prId}`);
+    const data = await response.json();
+    setDiffData(data.diffs);
+  } catch (err) {
+    console.log(err);
+  } finally {
+    setDiffLoading(false);
+  }
+};
   return (
     <div className="repoContainer">
 
@@ -862,28 +878,53 @@ const Repository = () => {
             ))
         }
       </div>
-          {isOwner && pullRequests.length > 0 && (
+          {activePRDiff && (
   <div className="commitCard">
-    <h2>Pull Requests</h2>
-    {pullRequests.map(pr => (
-      <div key={pr._id} className="commitRow">
-        <div>
-          <div className="commitMessage">{pr.title}</div>
-          <div className="commitInfo">{pr.description}</div>
-          <div className="commitAuthor">
-            from {pr.fromRepo?.name} by {pr.author?.username}
+    <h2>📂 File Diff</h2>
+    {diffLoading ? (
+      <p>Loading diff...</p>
+    ) : (
+      diffData.map((file, i) => (
+        <div key={i} style={{ marginBottom: "20px" }}>
+          <div className="commitMessage">
+            {file.isNew && "🆕 "}{file.isDeleted && "🗑 "}{file.fileName}
+            {!file.hasChanges && <span style={{ color: "#8b949e" }}> — no changes</span>}
           </div>
+          {file.isDeleted ? (
+            <div style={{ color: "#f85149", padding: "10px", background: "#0d1117", borderRadius: "6px", marginTop: "8px" }}>
+              This file was deleted in the fork.
+            </div>
+          ) : file.hasChanges && (
+            <pre style={{
+              background: "#0d1117",
+              border: "1px solid #30363d",
+              borderRadius: "6px",
+              padding: "12px",
+              overflowX: "auto",
+              fontSize: "13px",
+              marginTop: "8px",
+              whiteSpace: "pre-wrap"
+            }}>
+              {file.diff.split("\n").map((line, j) => (
+                <div
+                  key={j}
+                  style={{
+                    color: line.startsWith("+") ? "#3fb950"
+                         : line.startsWith("-") ? "#f85149"
+                         : "#8b949e",
+                    background: line.startsWith("+") ? "#0d2618"
+                              : line.startsWith("-") ? "#2d1117"
+                              : "transparent"
+                  }}
+                >
+                  {line}
+                </div>
+              ))}
+            </pre>
+          )}
         </div>
-        <div style={{ display: "flex", gap: "8px" }}>
-          <button className="greenButton" onClick={() => handleMergePR(pr._id)}>
-            Merge
-          </button>
-          <button className="deleteButton" onClick={() => handleClosePR(pr._id)}>
-            Close
-          </button>
-        </div>
-      </div>
-    ))}
+      ))
+    )}
   </div>
 )}
     </div>

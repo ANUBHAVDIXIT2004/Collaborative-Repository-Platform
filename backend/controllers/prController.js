@@ -108,5 +108,69 @@ const closePR = async (req, res) => {
     res.status(500).json({ success: false });
   }
 };
+const Diff = require("diff");
 
-module.exports = { createPR, getPRs, mergePR, closePR };
+const getPRDiff = async (req, res) => {
+  try {
+    const { prId } = req.params;
+
+    const pr = await PullRequest.findById(prId)
+      .populate("fromRepo")
+      .populate("toRepo");
+
+    if (!pr) return res.status(404).json({ message: "PR not found" });
+
+    // Get files from both repos
+    const fromFiles = await File.find({ repo: pr.fromRepo._id });
+    const toFiles = await File.find({ repo: pr.toRepo._id });
+
+    const diffs = [];
+
+    for (const fromFile of fromFiles) {
+      // Find matching file in original repo
+      const toFile = toFiles.find(f => f.name === fromFile.name);
+
+      const originalContent = toFile ? toFile.content : "";
+      const newContent = fromFile.content;
+
+      // Generate line-by-line diff
+      const diff = Diff.createPatch(
+        fromFile.name,
+        originalContent,
+        newContent,
+        "original",
+        "forked"
+      );
+
+      // Check if there are actual changes
+      const hasChanges = originalContent !== newContent;
+
+      diffs.push({
+        fileName: fromFile.name,
+        hasChanges,
+        diff,
+        isNew: !toFile,  // file didn't exist in original repo
+      });
+    }
+
+    // Also check for deleted files (exist in original but not in fork)
+    for (const toFile of toFiles) {
+      const stillExists = fromFiles.find(f => f.name === toFile.name);
+      if (!stillExists) {
+        diffs.push({
+          fileName: toFile.name,
+          hasChanges: true,
+          diff: null,
+          isDeleted: true,
+        });
+      }
+    }
+
+    res.json({ success: true, diffs });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false });
+  }
+};
+module.exports = { createPR, getPRs, mergePR, closePR , getPRDiff};
