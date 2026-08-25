@@ -47,10 +47,11 @@ const getPRs = async (req, res) => {
 };
 
 // Owner merges PR — copies files from fromRepo into toRepo
+// Owner merges PR. `resolutions` (optional) = { [fileName]: "theirs" | "ours" | "<custom content>" }
 const mergePR = async (req, res) => {
   try {
     const { prId } = req.params;
-    const { userId } = req.body;
+    const { userId, resolutions = {} } = req.body;
 
     const pr = await PullRequest.findById(prId);
     if (!pr) return res.status(404).json({ message: "PR not found" });
@@ -60,28 +61,54 @@ const mergePR = async (req, res) => {
       return res.status(403).json({ message: "Only the owner can merge" });
     }
 
-    // Get all files from the forked repo
     const forkedFiles = await File.find({ repo: pr.fromRepo });
+    const originalFiles = await File.find({ repo: pr.toRepo });
+    const originalByName = new Map(originalFiles.map(f => [f.name, f]));
+    const forkedByName = new Map(forkedFiles.map(f => [f.name, f]));
 
-    // Replace files in the original repo
-    await File.deleteMany({ repo: pr.toRepo });
+    const finalFiles = new Map();
+    const changedFileNames = [];
 
-    for (const file of forkedFiles) {
-      await File.create({
-        repo: pr.toRepo,
-        name: file.name,
-        content: file.content,
-        createdBy: userId,
-      });
+    for (const forkedFile of forkedFiles) {
+      const original = originalByName.get(forkedFile.name);
+      const resolution = resolutions[forkedFile.name];
+
+      let finalContent;
+      if (resolution === "ours") {
+        finalContent = original ? original.content : null;
+      } else if (typeof resolution === "string" && resolution !== "theirs") {
+        finalContent = resolution;
+      } else {
+        finalContent = forkedFile.content;
+      }
+
+      if (finalContent !== null) finalFiles.set(forkedFile.name, finalContent);
+      if (!original || original.content !== forkedFile.content) {
+        changedFileNames.push(forkedFile.name);
+      }
     }
 
-    // Create a commit for the merge
+    for (const originalFile of originalFiles) {
+      if (forkedByName.has(originalFile.name)) continue;
+      const resolution = resolutions[originalFile.name];
+      if (resolution === "theirs") {
+        changedFileNames.push(originalFile.name);
+      } else {
+        finalFiles.set(originalFile.name, originalFile.content);
+      }
+    }
+
+    await File.deleteMany({ repo: pr.toRepo });
+    for (const [name, content] of finalFiles) {
+      await File.create({ repo: pr.toRepo, name, content, createdBy: userId });
+    }
+
     await VersionControl.commit({
       repoId: pr.toRepo,
       userId,
       message: `Merged pull request: ${pr.title}`,
       action: "MERGE",
-      fileName: "all files",
+      fileName: changedFileNames.length ? changedFileNames.join(", ") : "all files",
     });
 
     pr.status = "merged";
