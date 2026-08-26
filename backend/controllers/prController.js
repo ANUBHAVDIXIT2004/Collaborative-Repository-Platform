@@ -98,10 +98,31 @@ const mergePR = async (req, res) => {
       }
     }
 
-    await File.deleteMany({ repo: pr.toRepo });
-    for (const [name, content] of finalFiles) {
-      await File.create({ repo: pr.toRepo, name, content, createdBy: userId });
-    }
+    // Only touch files that actually changed — update in place, create new
+// ones, and delete only files whose deletion was accepted. Untouched
+// files are left alone entirely (no delete+recreate).
+for (const [name, content] of finalFiles) {
+  const existing = originalByName.get(name);
+  if (existing) {
+    if (existing.content === content) continue; // unchanged, skip
+    existing.content = content;
+    existing.createdBy = userId;
+    await existing.save();
+  } else {
+    await File.create({
+      repo: pr.toRepo,
+      name,
+      content,
+      createdBy: userId,
+    });
+  }
+}
+// Delete files whose removal was accepted (present originally, not in finalFiles)
+for (const originalFile of originalFiles) {
+  if (!finalFiles.has(originalFile.name)) {
+    await File.deleteOne({ _id: originalFile._id });
+  }
+}
 
     await VersionControl.commit({
       repoId: pr.toRepo,
