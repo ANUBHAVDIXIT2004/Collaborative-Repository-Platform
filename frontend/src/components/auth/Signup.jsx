@@ -7,6 +7,7 @@ import { Box, Button } from "@primer/react";
 import "./auth.css";
 
 import logo from "../../assets/github-mark-white.svg";
+import hero from "../../assets/hero.png";
 import { Link } from "react-router-dom";
 import BASE_URL from '../../config.js';
 const Signup = () => {
@@ -44,76 +45,95 @@ const Signup = () => {
 
   return (
     <div className="login-wrapper">
-      <div className="login-logo-container">
-        <img className="logo-login" src={logo} alt="Logo" />
+      <div className="auth-form-side">
+        <div className="login-logo-container">
+          <img className="logo-login" src={logo} alt="Logo" />
+        </div>
+
+        <div className="login-box-wrapper">
+          <div className="login-heading">
+            <Box sx={{ padding: 1 }}>
+              <PageHeader>
+                <PageHeader.TitleArea variant="large">
+                  <PageHeader.Title>Sign Up</PageHeader.Title>
+                </PageHeader.TitleArea>
+              </PageHeader>
+            </Box>
+          </div>
+
+          <div className="login-box">
+            <div>
+              <label className="label">Username</label>
+              <input
+                autoComplete="off"
+                name="Username"
+                id="Username"
+                className="input"
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
+            </div>
+
+            <div>
+              <label className="label">Email address</label>
+              <input
+                autoComplete="off"
+                name="Email"
+                id="Email"
+                className="input"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+
+            <div className="div">
+              <label className="label">Password</label>
+              <input
+                autoComplete="off"
+                name="Password"
+                id="Password"
+                className="input"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+
+            <Button
+              variant="primary"
+              className="login-btn"
+              disabled={loading}
+              onClick={handleSignup}
+            >
+              {loading ? "Loading..." : "Signup"}
+            </Button>
+          </div>
+
+          <div className="pass-box">
+            <p>
+              Already have an account? <Link to="/auth">Login</Link>
+            </p>
+          </div>
+        </div>
       </div>
 
-      <div className="login-box-wrapper">
-        <div className="login-heading">
-          <Box sx={{ padding: 1 }}>
-            <PageHeader>
-              <PageHeader.TitleArea variant="large">
-                <PageHeader.Title>Sign Up</PageHeader.Title>
-              </PageHeader.TitleArea>
-            </PageHeader>
-          </Box>
-        </div>
-
-        <div className="login-box">
-          <div>
-            <label className="label">Username</label>
-            <input
-              autoComplete="off"
-              name="Username"
-              id="Username"
-              className="input"
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
-          </div>
-
-          <div>
-            <label className="label">Email address</label>
-            <input
-              autoComplete="off"
-              name="Email"
-              id="Email"
-              className="input"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
-
-          <div className="div">
-            <label className="label">Password</label>
-            <input
-              autoComplete="off"
-              name="Password"
-              id="Password"
-              className="input"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
-
-          <Button
-            variant="primary"
-            className="login-btn"
-            disabled={loading}
-            onClick={handleSignup}
-          >
-            {loading ? "Loading..." : "Signup"}
-          </Button>
-        </div>
-
-        <div className="pass-box">
-          <p>
-            Already have an account? <Link to="/auth">Login</Link>
-          </p>
-        </div>
+      <div className="auth-side-panel">
+        <img className="auth-hero-img" src={hero} alt="" />
+        <h2>
+          Your code, <span>version controlled.</span>
+        </h2>
+        <p>
+          Join BitHub to host repositories, collaborate through pull requests,
+          and use AI tools built right into your workflow.
+        </p>
+        <ul className="auth-feature-list">
+          <li>Custom VCS engine — commits, snapshots, revert, S3 remote sync</li>
+          <li>Fork a repo, open a PR, review a per-file diff, merge with conflict choices</li>
+          <li>AI commit messages, README generation, and RepoChat for any codebase</li>
+          <li>Real-time PR notifications via Socket.io</li>
+        </ul>
       </div>
     </div>
   );
