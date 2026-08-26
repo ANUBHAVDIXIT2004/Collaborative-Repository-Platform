@@ -129,8 +129,7 @@ const Signup = () => {
           and use AI tools built right into your workflow.
         </p>
         <ul className="auth-feature-list">
-          <li>Custom VCS engine — commits, snapshots, revert, S3 remote sync</li>
-          <li>Fork a repo, open a PR, review a per-file diff, merge with conflict choices</li>
+          <li>create or Fork a repo, open a PR, review a per-file diff, merge with conflict choices</li>
           <li>AI commit messages, README generation, and RepoChat for any codebase</li>
           <li>Real-time PR notifications via Socket.io</li>
         </ul>
