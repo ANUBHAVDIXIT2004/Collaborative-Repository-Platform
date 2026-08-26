@@ -25,7 +25,8 @@ The version control engine (`BitHub`) works as both a **CLI tool** and a **web-b
 **Platform**
 - JWT-based auth with bcrypt password hashing
 - Create, fork, delete, and toggle visibility of repositories
-- Pull Request system — fork a repo, make changes, send a PR; owner can merge or close
+- Pull Request system — fork a repo, make changes, send a PR; owner reviews a per-file diff and merges or closes it
+- Merge conflict resolution — before merging, the owner picks "take fork's version" or "keep current version" per changed/deleted file; only files that actually changed are touched, everything else in the target repo is left untouched
 - Star/unstar repositories with live star counts
 - User profiles with contribution heatmap
 - Issue tracker (open/close) per repository
@@ -232,7 +233,8 @@ node index.js revert <commitID>           # Revert to a past commit
 |--------|----------|-------------|
 | POST | `/pr/create` | Open a pull request |
 | GET | `/pr/:repoId` | Get open PRs for a repo |
-| POST | `/pr/merge/:prId` | Merge a pull request |
+| GET | `/pr/diff/:prId` | Get per-file diff between fork and target repo |
+| POST | `/pr/merge/:prId` | Merge a pull request, with optional per-file `resolutions` (`"theirs"` / `"ours"`) |
 | PATCH | `/pr/close/:prId` | Close a pull request |
 
 ### Issues
@@ -287,8 +289,6 @@ AWS credentials should be set via AWS CLI or `AWS_ACCESS_KEY_ID` / `AWS_SECRET_A
 This project intentionally focuses on core platform and version control primitives. The following are known limitations and planned improvements:
 
 - **Branching** — Currently single linear history per repo (one HEAD pointer)
-- **Diff generation** — Commits store full snapshots; delta computation is not yet implemented
-- **Merge conflict resolution** — PR merge does a full file replacement; no line-level conflict detection
 - **Distributed sync protocol** — S3 push/pull is a backup mechanism, not a true distributed VCS protocol
 
 These are the natural next steps for anyone looking to contribute or extend the project.
