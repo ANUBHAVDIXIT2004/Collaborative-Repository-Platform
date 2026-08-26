@@ -300,7 +300,3 @@ These are the natural next steps for anyone looking to contribute or extend the 
 **Anubhav Dixit**
 
 ---
-
-## 📄 License
-
-ISC License
