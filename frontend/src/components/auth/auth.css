@@ -149,9 +149,11 @@
 .signup-button {
   width: 250px;
 }
-
-/* ---------- Right: about / hero side ---------- */
 .auth-side-panel {
+  display: none !important;
+}
+/* ---------- Right: about / hero side ---------- */
+/* .auth-side-panel {
   flex: 1 1 50%;
   position: relative;
   display: flex;
@@ -265,4 +267,4 @@
   .pass-box {
     width: 200px;
   }
-}
+} */
