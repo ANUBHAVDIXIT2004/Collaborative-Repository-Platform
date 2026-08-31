@@ -5,6 +5,8 @@
   font-family: "Inter", "Asap", sans-serif;
   background-color: #0c1116;
   display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 /* ---------- Left: form side ---------- */
