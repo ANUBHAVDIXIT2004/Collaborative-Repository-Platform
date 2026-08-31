@@ -119,7 +119,7 @@ const Signup = () => {
         </div>
       </div>
 
-      <div className="auth-side-panel">
+      {/* <div className="auth-side-panel">
         <img className="auth-hero-img" src={hero} alt="" />
         <h2>
           Your code, <span>version controlled.</span>
@@ -133,7 +133,7 @@ const Signup = () => {
           <li>AI commit messages, README generation, and RepoChat for any codebase</li>
           <li>Real-time PR notifications via Socket.io</li>
         </ul>
-      </div>
+      </div> */}
     </div>
   );
 };
